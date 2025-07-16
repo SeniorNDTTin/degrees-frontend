@@ -1,0 +1,23 @@
+.login-page {
+  background: linear-gradient(-135deg, #c850c0, #4158d0);
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__form {
+    background-color: #ffffff;
+    padding: 80px 150px;
+    border-radius: 20px;
+  }
+
+  &__form-title {
+    text-align: center;
+  }
+
+  &__form-inner-button {
+    display: flex;
+    justify-content: center;
+  }
+}

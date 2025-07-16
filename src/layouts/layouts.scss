@@ -1,0 +1,16 @@
+.layout {
+  display: flex;
+
+  &__left {
+    margin: 50px 0;
+    width: 20%;
+  }
+
+  &__right {
+    flex: 1;
+  }
+
+  &__main {
+    padding: 20px;
+  }
+}
