@@ -7,6 +7,10 @@ import Dashboard from "../pages/dashboard";
 import FindRolePage from "../pages/roles/FindRole";
 import CreateRolePage from "../pages/roles/CreateRole";
 import UpdateRolePage from "../pages/roles/UpdateRole";
+import VerifierPage from "../pages/verifiers";
+import FindVerifierPage from "../pages/verifiers/FindVerifier";
+import CreateVerifierPage from "../pages/verifiers/CreateVerifier";
+import UpdateVerifierPage from "../pages/verifiers/UpdateVerifier";
 
 function RoutesApp() {
   return (
@@ -24,6 +28,11 @@ function RoutesApp() {
             <Route path="roles/create" element={<CreateRolePage />} />
             <Route path="roles/find/:id" element={<FindRolePage />} />
             <Route path="roles/update/:id" element={<UpdateRolePage />} />
+
+            <Route path="verifiers" element={<VerifierPage />} />
+            <Route path="verifiers/create" element={<CreateVerifierPage />} />
+            <Route path="verifiers/find/:id" element={<FindVerifierPage />} />
+            <Route path="verifiers/update/:id" element={<UpdateVerifierPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
