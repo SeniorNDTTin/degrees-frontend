@@ -1,5 +1,44 @@
 .header {
-  padding: 20px;
+  background-color: #f1f5f9; // nền xanh xám nhạt
+  border-bottom: 2px solid #0284c7; // đường viền dưới đậm
+  color: #1e293b;
+  height: 64px;
+  padding: 0 24px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  .logo {
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #0284c7; // logo màu xanh dương nổi bật
+  }
+
+  .header__right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      color: #1e293b;
+    }
+
+    .logout-btn {
+      background-color: #0284c7;
+      color: white;
+      border: none;
+
+      &:hover {
+        background-color: #0369a1;
+      }
+    }
+  }
 }

@@ -1,16 +1,45 @@
 .layout {
   display: flex;
+  min-height: 100vh;
 
   &__left {
-    margin: 50px 0;
-    width: 20%;
+    width: 240px; // hoặc 20%
+    background-color: #f9f9f9;
+    margin-top: 60px; // <<-- thêm dòng này để lùi xuống sau header
+    
   }
 
   &__right {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    height: 60px;
+    background-color: #f1f8ff;
+    border-bottom: 1px solid #ccc;
+    position: fixed;
+    top: 0;
+    left: 240px; // nếu sidebar cố định chiều rộng
+    right: 0;
+    z-index: 1000;
   }
 
   &__main {
+    flex: 1;
     padding: 20px;
+    padding-top: 80px; // tránh che nội dung bởi header nếu header fixed
+    background: #fff;
+  }
+
+  &__footer {
+    height: 60px;
+    background-color: #1e2a3a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
+
