@@ -129,7 +129,7 @@ function UpdateRolePage() {
           <Form.Item label={null}>
             <div className="create-roles__form-button">
               <Button type="primary" htmlType="submit">
-                Nộp
+                Sửa
               </Button>
             </div>
           </Form.Item>
