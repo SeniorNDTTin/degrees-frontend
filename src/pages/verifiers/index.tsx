@@ -91,7 +91,7 @@ function VerifierPage() {
           data: { data },
         } = await findVerifiersApi({ accessToken });
         setVerifiers(data.verifiers.items);
-      } catch {
+      } catch(error) {
         toast.error("Có lỗi xảy ra!");
       } finally {
         setLoading(false);
@@ -99,6 +99,8 @@ function VerifierPage() {
     };
     fetchApi();
   }, [accessToken, reload]);
+
+  console.log("verifiers", verifiers);
 
   return (
     <div className="verifier-page">
