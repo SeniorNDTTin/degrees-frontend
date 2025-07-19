@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import type { ICheckAccessToken, ILogin } from "../interfaces/auth";
+import type { ICheckAccessToken, ILogin, ILoginValidateOTP } from "../interfaces/auth";
 import { backendDomainV1 } from "../constants/common";
 import type { IResponse } from "../interfaces/response";
 
@@ -14,6 +14,19 @@ export const loginApi = async ({
   return await axios.post<IResponse<ILogin>>(`${backendDomainV1}/auth/login`, {
     email,
     password,
+  });
+};
+
+export const loginValidateOTPApi = async ({
+  userId,
+  otp,
+}: {
+  userId: string;
+  otp: string;
+}) => {
+  return await axios.post<IResponse<ILoginValidateOTP>>(`${backendDomainV1}/auth/login/validate-otp`, {
+    userId,
+    otp,
   });
 };
 
