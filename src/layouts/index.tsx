@@ -14,7 +14,7 @@ function LayoutApp() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
-
+  const isLoginPage = location.pathname === "/admin/auth/login";
   useEffect(() => {
     setIsLogin(false);
 
@@ -46,11 +46,12 @@ function LayoutApp() {
       }
     };
     checkChangedUrl();
-  }, [location.pathname, navigate]);
+  },
+  [location.pathname, navigate]);
 
   return (
     <>
-      {isLogin ? (
+      {isLogin && !isLoginPage ? (
         <>
           <div className="layout">
             <div className="layout__left">
