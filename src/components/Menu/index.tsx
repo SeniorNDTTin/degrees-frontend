@@ -2,6 +2,7 @@ import { Menu } from "antd";
 import type { GetProp, MenuProps } from "antd";
 import { FaCriticalRole } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
+import { MdVerified } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type MenuItem = GetProp<MenuProps, "items">[number];
@@ -25,6 +26,14 @@ function AppMenu() {
       label: "Vai trò",
       onClick: () => {
         navigate("/admin/roles");
+      },
+    },
+    {
+      key: "/admin/verifiers",
+      icon: <MdVerified />,
+      label: "Người xác thực",
+      onClick: () => {
+        navigate("/admin/verifiers");
       },
     },
   ];
