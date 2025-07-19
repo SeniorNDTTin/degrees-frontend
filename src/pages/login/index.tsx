@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { Button, Form, Input, Typography, type FormProps } from "antd";
 
-import { loginApi } from "../../services/auth";
 import { setCookie } from "../../helpers/cookies";
+import { loginApi, loginValidateOTPApi } from "../../services/auth";
+
+import type { OTPProps } from "antd/es/input/OTP";
 
 import "./login.scss";
-import { useNavigate } from "react-router-dom";
 
 type FieldType = {
   email?: string;
@@ -15,6 +18,8 @@ const { Title } = Typography;
 
 function LoginPage() {
   const navigate = useNavigate();
+  const [userId, setUserId] = useState("");
+  const [hiddenValidateOTP, setHiddenValidateOTP] = useState(true);
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     const { email, password } = values;
@@ -30,11 +35,32 @@ function LoginPage() {
         password: password as string,
       });
 
-      setCookie("access_token", data.access_token, 1);
-      navigate("/admin/dashboard");
+      setUserId(data.userId);
+      setHiddenValidateOTP(false);
     } catch {
       toast.error("Sai thông tin đăng nhập!");
     }
+  };
+
+  const onChangeOTP: OTPProps["onChange"] = async (text) => {
+    if (!userId || hiddenValidateOTP) {
+      toast.error("Có lỗi xảy ra!");
+      return;
+    }
+
+    try {
+      const {
+        data: { data },
+      } = await loginValidateOTPApi({ userId, otp: text });
+
+      setCookie("access_token", data.access_token, 1);
+      navigate("/admin/dashboard");
+    } catch {
+      toast.error("Có lỗi xảy ra!");
+    }
+  };
+  const sharedOTPProps: OTPProps = {
+    onChange: onChangeOTP,
   };
 
   return (
@@ -70,6 +96,16 @@ function LoginPage() {
               </Button>
             </div>
           </Form.Item>
+
+          {!hiddenValidateOTP && (
+            <>
+              <Title level={5}>Xác Thực Mã OTP</Title>
+              <Input.OTP
+                formatter={(str) => str.toUpperCase()}
+                {...sharedOTPProps}
+              />
+            </>
+          )}
         </Form>
       </div>
     </>
