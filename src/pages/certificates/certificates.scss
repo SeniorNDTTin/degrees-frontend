@@ -1,8 +1,16 @@
 .certificates {
-
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  &__form {
+    max-width: 800px;
+  }
+
+  &__form-button {
+    display: flex;
+    justify-content: flex-end;
   }
 }

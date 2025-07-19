@@ -8,9 +8,17 @@ import { createCertificateApi } from "../../services/certificates";
 const { Title } = Typography;
 
 type FieldType = {
-  name?: string;
-  description?: string;
-  permissions?: string;
+  title?: string;
+  score?: number;
+  scoreDetails?: string;
+  issuedDate?: string;
+  certHash?: string;
+  blockchainTxID?: string;
+  status?: string;
+  studentEmail?: string;
+  issuerID?: string;
+  studentSignature?: string;
+  issuerSignature?: string;
 };
 
 function CreateCertificatePage() {
@@ -18,16 +26,23 @@ function CreateCertificatePage() {
   const accessToken = getCookie("access_token");
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    const { name, description, permissions } = values;
-
     try {
       await createCertificateApi({
         accessToken,
-        name: name as string,
-        description: description as string,
-        permissions: permissions as string,
+        title: values.title as string,
+        score: values.score as number,
+        scoreDetails: values.scoreDetails,
+        issuedDate: values.issuedDate as string,
+        certHash: values.certHash as string,
+        blockchainTxID: values.blockchainTxID as string,
+        status: values.status as string,
+        studentEmail: values.studentEmail as string,
+        issuerID: values.issuerID as string,
+        studentSignature: values.studentSignature as string,
+        issuerSignature: values.issuerSignature as string,
       });
       navigate("/admin/certificates");
+      toast.success("Tạo chứng chỉ thành công!");
     } catch {
       toast.error("Có lỗi xảy ra!");
     }
@@ -35,70 +50,102 @@ function CreateCertificatePage() {
 
   return (
     <>
-      <div className="create-certificates">
+      <div className="certificates">
         <Title>Tạo Mới Chứng Chỉ</Title>
-
         <Form
-          className="create-certificates__form"
+          className="certificates__form"
           onFinish={onFinish}
           layout="vertical"
         >
           <Form.Item<FieldType>
-            label="Tên"
-            name="name"
-            rules={[{ required: true, message: "Hãy nhập tên!" }]}
+            label="Tiêu đề"
+            name="title"
+            rules={[{ required: true, message: "Hãy nhập tiêu đề!" }]}
           >
             <Input />
           </Form.Item>
-
           <Form.Item<FieldType>
-            label="Mô tả"
-            name="description"
-            rules={[{ required: true, message: "Hãy nhập mô tả!" }]}
+            label="Điểm"
+            name="score"
+            rules={[{ required: true, message: "Hãy nhập điểm!" }]}
           >
-            <Input.TextArea rows={10} />
+            <Input type="number" step="0.1" />
           </Form.Item>
-
           <Form.Item<FieldType>
-            label="Chứng chỉ"
-            name="permissions"
-            rules={[{ required: true, message: "Hãy chọn chứng chỉ!" }]}
+            label="Chi tiết điểm"
+            name="scoreDetails"
           >
-            <Select mode="multiple"
-            allowClear
-            style={{ width: '100%' }}
-            placeholder = "Hãy chọn chứng chỉ"
-            defaultValue={[
-            //Ceratificate
-                {
-                    label: "create_certificate",
-                    value: "create_certificate",
-                },
-                {
-                    label: "update_certificate",
-                    value: "update_certificate",
-                },
-                {
-                    label: "delete_certificate",
-                    value: "delete_certificate",
-                },
-                {
-                    label: "read_certificate",
-                    value: "read_certificate",
-                },
-
-                {
-
-                }
-            ]}
+            <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item<FieldType>
+            label="Ngày phát hành"
+            name="issuedDate"
+            rules={[{ required: true, message: "Hãy nhập ngày phát hành!" }]}
+          >
+            <Input type="date" />
+          </Form.Item>
+          <Form.Item<FieldType>
+            label="Mã băm chứng chỉ"
+            name="certHash"
+            rules={[{ required: true, message: "Hãy nhập mã băm chứng chỉ!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item<FieldType>
+            label="ID giao dịch Blockchain"
+            name="blockchainTxID"
+            rules={[{ required: true, message: "Hãy nhập ID giao dịch Blockchain!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item<FieldType>
+            label="Trạng thái"
+            name="status"
+            rules={[{ required: true, message: "Hãy chọn trạng thái!" }]}
+          >
+            <Select
+              style={{ width: "100%" }}
+              placeholder="Chọn trạng thái"
+              options={[
+                { label: "Active", value: "Active" },
+                { label: "Revoked", value: "Revoked" },
+                { label: "Pending", value: "Pending" },
+              ]}
             />
           </Form.Item>
-
+          <Form.Item<FieldType>
+            label="Email học viên"
+            name="studentEmail"
+            rules={[{ required: true, message: "Hãy nhập email học viên!" }]}
+          >
+            <Input type="email" />
+          </Form.Item>
+          <Form.Item<FieldType>
+            label="ID tổ chức phát hành"
+            name="issuerID"
+            rules={[{ required: true, message: "Hãy nhập ID tổ chức phát hành!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item<FieldType>
+            label="Chữ ký học viên"
+            name="studentSignature"
+            rules={[{ required: true, message: "Hãy nhập chữ ký học viên!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item<FieldType>
+            label="Chữ ký tổ chức phát hành"
+            name="issuerSignature"
+            rules={[{ required: true, message: "Hãy nhập chữ ký tổ chức phát hành!" }]}
+          >
+            <Input />
+          </Form.Item>
           <Form.Item label={null}>
-            <div className="create-certificates__form__button">
-              <Button type = "primary" htmlType="submit">
-            Tạo mới
-                </Button>
+            <div className="certificates__form-button">
+              <Button type="primary" htmlType="submit">
+                Nộp
+              </Button>
             </div>
           </Form.Item>
         </Form>
@@ -107,3 +154,4 @@ function CreateCertificatePage() {
   );
 }
 
+export default CreateCertificatePage;
