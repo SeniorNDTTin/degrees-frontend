@@ -1,11 +1,10 @@
-export interface ICertificate {
+export interface IDegree {
   _id: string;
-  title: string;
-  score: number;
-  scoreDetails?: string;
+  degreeName: string;
+  major: string;
+  GPA: number;
+  classification: string;
   issuedDate: string;
-  certHash: string;
-  blockchainTxID: string;
   status: string;
   studentEmail: string;
   issuerID: string;
@@ -26,13 +25,4 @@ export interface ICertificate {
   };
   createdAt: string;
   updatedAt: string;
-}
-
-export interface IFindCertificates {
-  certificates: {
-    total: number;
-    page: number;
-    limit: number;
-    items: ICertificate[];
-  };
-}
+} 
