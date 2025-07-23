@@ -15,6 +15,10 @@ import CertificatePage from "../pages/certificates";
 import CreateCertificatePage from "../pages/certificates/CreateCertificate";
 import FindCertificatePage from "../pages/certificates/FindCertificate";
 import UpdateCertificatePage from "../pages/certificates/UpdateCertificate";
+import VerificationPage from "../pages/verifications";
+import CreateVerificationPage from "../pages/verifications/CreateVerification";
+import FindVerificationPage from "../pages/verifications/FindVerification";
+import UpdateVerificationPage from "../pages/verifications/UpdateVerification";
 
 function RoutesApp() {
   return (
@@ -44,6 +48,11 @@ function RoutesApp() {
             <Route path="certificates/find/:id" element={<FindCertificatePage />} />
             <Route path="certificates/update/:id" element={<UpdateCertificatePage />} />
 
+            {/* Verifications */}
+            <Route path="verifications" element={<VerificationPage />} />
+            <Route path="verifications/create" element={<CreateVerificationPage />} />
+            <Route path="verifications/find/:id" element={<FindVerificationPage />} />
+            <Route path="verifications/update/:id" element={<UpdateVerificationPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
