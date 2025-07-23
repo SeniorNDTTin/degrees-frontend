@@ -18,6 +18,10 @@ import CertificatePage from "../pages/certificates";
 import CreateCertificatePage from "../pages/certificates/CreateCertificate";
 import FindCertificatePage from "../pages/certificates/FindCertificate";
 import UpdateCertificatePage from "../pages/certificates/UpdateCertificate";
+import VerificationPage from "../pages/verifications";
+import CreateVerificationPage from "../pages/verifications/CreateVerification";
+import FindVerificationPage from "../pages/verifications/FindVerification";
+import UpdateVerificationPage from "../pages/verifications/UpdateVerification";
 
 import DegreePage from "../pages/degrees/Degrees";
 import CreateDegreePage from "../pages/degrees/CreateDegree";
@@ -57,7 +61,12 @@ function RoutesApp() {
             <Route path="degrees/create" element={<CreateDegreePage />} />
             <Route path="degrees/find/:id" element={<FindDegreePage />} />
             <Route path="degrees/update/:id" element={<UpdateDegreePage />} />
-            
+
+            {/* Verifications */}
+            <Route path="verifications" element={<VerificationPage />} />
+            <Route path="verifications/create" element={<CreateVerificationPage />} />
+            <Route path="verifications/find/:id" element={<FindVerificationPage />} />
+            <Route path="verifications/update/:id" element={<UpdateVerificationPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
