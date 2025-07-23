@@ -28,6 +28,11 @@ import CreateDegreePage from "../pages/degrees/CreateDegree";
 import FindDegreePage from "../pages/degrees/FindDegree";
 import UpdateDegreePage from "../pages/degrees/UpdateDegree";
 
+import IssuingAgencies from "../pages/issuing-agencies";
+import CreateIssuingAgency from "../pages/issuing-agencies/CreateIssuingAgency";
+import FindIssuingAgency from "../pages/issuing-agencies/FindIssuingAgency";
+import UpdateIssuingAgency from "../pages/issuing-agencies/UpdateIssuingAgency";
+
 function RoutesApp() {
   return (
     <>
@@ -67,6 +72,12 @@ function RoutesApp() {
             <Route path="verifications/create" element={<CreateVerificationPage />} />
             <Route path="verifications/find/:id" element={<FindVerificationPage />} />
             <Route path="verifications/update/:id" element={<UpdateVerificationPage />} />
+
+            {/* Issuing Agencies */}
+            <Route path="issuing-agencies" element={<IssuingAgencies />} />
+            <Route path="issuing-agencies/create" element={<CreateIssuingAgency />} />
+            <Route path="issuing-agencies/find/:id" element={<FindIssuingAgency />} />
+            <Route path="issuing-agencies/update/:id" element={<UpdateIssuingAgency />} />
           </Route>
         </Routes>
       </BrowserRouter>
