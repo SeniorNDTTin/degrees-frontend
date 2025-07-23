@@ -29,15 +29,6 @@ function AppMenu() {
       },
     },
     {
-      key: "/admin/verifiers",
-      icon: <MdVerified />,
-      label: "Người xác thực",
-      onClick: () => {
-        navigate("/admin/verifiers");
-      },
-    },
-    // Add menu chứng chỉ
-    {
       key: "/admin/certificates",
       icon: <FaCertificate/>,
       label: "Chứng chỉ",
@@ -51,6 +42,14 @@ function AppMenu() {
       label: "Bằng cấp",
       onClick: () => {
         navigate("/admin/degrees");}
+    },
+    {
+      key: "/admin/verifiers",
+      icon: <MdVerified />,
+      label: "Người xác thực",
+      onClick: () => {
+        navigate("/admin/verifiers");
+      },
     },
     {
       key: "/admin/verifications",
