@@ -36,7 +36,7 @@ function AppMenu() {
         navigate("/admin/verifiers");
       },
     },
-    // Add menu bằng cấp
+    // Add menu chứng chỉ
     {
       key: "/admin/certificates",
       icon: <FaCertificate/>,
@@ -45,7 +45,12 @@ function AppMenu() {
         navigate("/admin/certificates");
       },
     },
-    // Add menu xác thực
+    {
+      key: "/admin/degrees",
+      icon: <FaCertificate/>,
+      onClick: () => {
+        navigate("/admin/degrees");}
+    },
     {
       key: "/admin/verifications",
       icon: <MdVerifiedUser />,
