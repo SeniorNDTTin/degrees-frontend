@@ -11,10 +11,21 @@ export interface ICertificate {
   issuerID: string;
   studentSignature: string;
   issuerSignature: string;
-  createdBy: { userId: string; createdAt: string };
-  updatedBy?: { userId: string; updatedAt: string }[];
+  createdBy: {
+    userId: string;
+    createdAt: string;
+  };
+  updatedBy?: {
+    userId: string;
+    updatedAt: string;
+  }[];
   isDeleted?: boolean;
-  deletedBy?: { userId: string; deletedAt: string };
+  deletedBy?: {
+    userId: string;
+    deletedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IFindCertificates {

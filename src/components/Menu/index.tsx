@@ -2,7 +2,7 @@ import { Menu } from "antd";
 import type { GetProp, MenuProps } from "antd";
 import { FaCertificate, FaCriticalRole } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { MdVerified } from "react-icons/md";
+import { MdVerified, MdVerifiedUser } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type MenuItem = GetProp<MenuProps, "items">[number];
@@ -45,15 +45,21 @@ function AppMenu() {
         navigate("/admin/certificates");
       },
     },
-    // Add menu bằng cấp
     {
       key: "/admin/degrees",
       icon: <FaCertificate/>,
       label: "Bằng cấp",
       onClick: () => {
         navigate("/admin/degrees");}
-    }
-
+    },
+    {
+      key: "/admin/verifications",
+      icon: <MdVerifiedUser />,
+      label: "Xác thực",
+      onClick: () => {
+        navigate("/admin/verifications");
+      },
+    },
   ];
 
   return (
