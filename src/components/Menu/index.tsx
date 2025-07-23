@@ -40,7 +40,7 @@ function AppMenu() {
     {
       key: "/admin/certificates",
       icon: <FaCertificate/>,
-      label: "Bằng cấp",
+      label: "Chứng chỉ",
       onClick: () => {
         navigate("/admin/certificates");
       },
@@ -49,6 +49,7 @@ function AppMenu() {
     {
       key: "/admin/degrees",
       icon: <FaCertificate/>,
+      label: "Bằng cấp",
       onClick: () => {
         navigate("/admin/degrees");}
     }
