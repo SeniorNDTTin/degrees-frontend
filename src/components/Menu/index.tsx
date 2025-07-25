@@ -3,6 +3,7 @@ import type { GetProp, MenuProps } from "antd";
 import { FaCertificate, FaCriticalRole } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { MdVerified, MdVerifiedUser } from "react-icons/md";
+import { BsBuilding } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type MenuItem = GetProp<MenuProps, "items">[number];
@@ -42,6 +43,14 @@ function AppMenu() {
       label: "Bằng cấp",
       onClick: () => {
         navigate("/admin/degrees");}
+    },
+    {
+      key: "/admin/issuing-agencies",
+      icon: <BsBuilding />,
+      label: "Cơ quan cấp bằng",
+      onClick: () => {
+        navigate("/admin/issuing-agencies");
+      },
     },
     {
       key: "/admin/verifiers",
