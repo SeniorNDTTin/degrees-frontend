@@ -37,7 +37,12 @@ function CreateDegreePage() {
       });
       navigate("/admin/degrees");
       toast.success("Tạo bằng cấp thành công!");
-    } catch {
+    } catch (error) {
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra!");
     }
   };
@@ -46,11 +51,7 @@ function CreateDegreePage() {
     <>
       <div className="degrees">
         <Title>Tạo Mới Bằng Cấp</Title>
-        <Form
-          className="degrees__form"
-          onFinish={onFinish}
-          layout="vertical"
-        >
+        <Form className="degrees__form" onFinish={onFinish} layout="vertical">
           <Form.Item<FieldType>
             label="Tên bằng cấp"
             name="degreeName"
@@ -119,7 +120,9 @@ function CreateDegreePage() {
           <Form.Item<FieldType>
             label="ID tổ chức phát hành"
             name="issuerID"
-            rules={[{ required: true, message: "Hãy nhập ID tổ chức phát hành!" }]}
+            rules={[
+              { required: true, message: "Hãy nhập ID tổ chức phát hành!" },
+            ]}
           >
             <Input />
           </Form.Item>

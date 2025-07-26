@@ -4,7 +4,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Form, Input, Select, Typography, type FormProps } from "antd";
 
 import { getCookie } from "../../helpers/cookies";
-import { findCertificateByIdApi, updateCertificateApi } from "../../services/certificates";
+import {
+  findCertificateByIdApi,
+  updateCertificateApi,
+} from "../../services/certificates";
 
 const { Title } = Typography;
 
@@ -43,7 +46,9 @@ function UpdateCertificatePage() {
           title: data.title,
           score: data.score,
           scoreDetails: data.scoreDetails,
-          issuedDate: data.issuedDate ? new Date(data.issuedDate).toISOString().split("T")[0] : undefined,
+          issuedDate: data.issuedDate
+            ? new Date(data.issuedDate).toISOString().split("T")[0]
+            : undefined,
           certHash: data.certHash,
           blockchainTxID: data.blockchainTxID,
           status: data.status,
@@ -79,7 +84,12 @@ function UpdateCertificatePage() {
       });
       navigate("/admin/certificates");
       toast.success("Cập nhật chứng chỉ thành công!");
-    } catch {
+    } catch (error) {
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra!");
     }
   };
@@ -108,10 +118,7 @@ function UpdateCertificatePage() {
           >
             <Input type="number" step="0.1" />
           </Form.Item>
-          <Form.Item<FieldType>
-            label="Chi tiết điểm"
-            name="scoreDetails"
-          >
+          <Form.Item<FieldType> label="Chi tiết điểm" name="scoreDetails">
             <Input.TextArea rows={4} />
           </Form.Item>
           <Form.Item<FieldType>
@@ -131,7 +138,9 @@ function UpdateCertificatePage() {
           <Form.Item<FieldType>
             label="ID giao dịch Blockchain"
             name="blockchainTxID"
-            rules={[{ required: true, message: "Hãy nhập ID giao dịch Blockchain!" }]}
+            rules={[
+              { required: true, message: "Hãy nhập ID giao dịch Blockchain!" },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -160,7 +169,9 @@ function UpdateCertificatePage() {
           <Form.Item<FieldType>
             label="ID tổ chức phát hành"
             name="issuerID"
-            rules={[{ required: true, message: "Hãy nhập ID tổ chức phát hành!" }]}
+            rules={[
+              { required: true, message: "Hãy nhập ID tổ chức phát hành!" },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -174,7 +185,9 @@ function UpdateCertificatePage() {
           <Form.Item<FieldType>
             label="Chữ ký tổ chức phát hành"
             name="issuerSignature"
-            rules={[{ required: true, message: "Hãy nhập chữ ký tổ chức phát hành!" }]}
+            rules={[
+              { required: true, message: "Hãy nhập chữ ký tổ chức phát hành!" },
+            ]}
           >
             <Input />
           </Form.Item>

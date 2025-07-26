@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { Button, Form, Input, Spin, Typography, Space, Select } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getIssuingAgencyById, updateIssuingAgency } from "../../services/issuing-agencies";
+import {
+  getIssuingAgencyById,
+  updateIssuingAgency,
+} from "../../services/issuing-agencies";
 import type { IUpdateIssuingAgencyDto } from "../../interfaces/issuing-agencies";
 import { getCookie } from "../../helpers/cookies";
 
@@ -22,20 +25,20 @@ const UpdateIssuingAgency = () => {
       try {
         setLoading(true);
         const response = await getIssuingAgencyById({ accessToken, id: id! });
-        console.log('API Response:', JSON.stringify(response.data, null, 2));
-        
+        console.log("API Response:", JSON.stringify(response.data, null, 2));
+
         const agencyData = response.data.data;
         if (agencyData && agencyData._id) {
           form.setFieldsValue({
             name: agencyData.name,
             email: agencyData.email,
             location: agencyData.location,
-            isUniversity: agencyData.isUniversity
+            isUniversity: agencyData.isUniversity,
           });
         } else {
-          console.error('Invalid response structure:', response);
-          toast.error('Không tìm thấy thông tin cơ sở cấp bằng!');
-          navigate('/admin/issuing-agencies');
+          console.error("Invalid response structure:", response);
+          toast.error("Không tìm thấy thông tin cơ sở cấp bằng!");
+          navigate("/admin/issuing-agencies");
         }
       } catch (error) {
         console.error("Error fetching issuing agency:", error);
@@ -58,7 +61,11 @@ const UpdateIssuingAgency = () => {
       toast.success("Cập nhật thành công!");
       navigate("/admin/issuing-agencies");
     } catch (error) {
-      console.error("Error updating issuing agency:", error);
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra khi cập nhật!");
     } finally {
       setSubmitting(false);
@@ -102,7 +109,7 @@ const UpdateIssuingAgency = () => {
             name="email"
             rules={[
               { required: true, message: "Vui lòng nhập email!" },
-              { type: "email", message: "Email không hợp lệ!" }
+              { type: "email", message: "Email không hợp lệ!" },
             ]}
           >
             <Input />
@@ -129,11 +136,7 @@ const UpdateIssuingAgency = () => {
 
           <Form.Item>
             <Space>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={submitting}
-              >
+              <Button type="primary" htmlType="submit" loading={submitting}>
                 Cập nhật
               </Button>
               <Button onClick={() => navigate("/admin/issuing-agencies")}>
@@ -147,4 +150,4 @@ const UpdateIssuingAgency = () => {
   );
 };
 
-export default UpdateIssuingAgency; 
+export default UpdateIssuingAgency;

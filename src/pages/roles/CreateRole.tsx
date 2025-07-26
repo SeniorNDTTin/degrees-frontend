@@ -28,7 +28,12 @@ function CreateRolePage() {
         permissions: permissions as string[],
       });
       navigate("/admin/roles");
-    } catch {
+    } catch(error) {
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+      
       toast.error("Có lỗi xảy ra!");
     }
   };

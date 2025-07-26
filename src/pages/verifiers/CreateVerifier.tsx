@@ -28,11 +28,16 @@ function CreateVerifierPage() {
     try {
       await createVerifierApi({
         accessToken,
-        ...values as Required<FieldType>,
+        ...(values as Required<FieldType>),
       });
       toast.success("Tạo thành công!");
       navigate("/admin/verifiers");
-    } catch {
+    } catch (error) {
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra!");
     } finally {
       setLoading(false);
@@ -43,10 +48,7 @@ function CreateVerifierPage() {
     <div className="verifier-page">
       <div className="verifier-page__header">
         <Title level={2}>Tạo người xác thực</Title>
-        <Button 
-          type="primary"
-          onClick={() => navigate("/admin/verifiers")}
-        >
+        <Button type="primary" onClick={() => navigate("/admin/verifiers")}>
           Quay lại
         </Button>
       </div>
@@ -63,7 +65,9 @@ function CreateVerifierPage() {
             <Form.Item<FieldType>
               label="Tên người xác thực"
               name="verifierName"
-              rules={[{ required: true, message: "Hãy nhập tên người xác thực!" }]}
+              rules={[
+                { required: true, message: "Hãy nhập tên người xác thực!" },
+              ]}
             >
               <Input placeholder="Nhập tên người xác thực" />
             </Form.Item>
@@ -81,17 +85,14 @@ function CreateVerifierPage() {
               name="verifierEmail"
               rules={[
                 { required: true, message: "Hãy nhập email!" },
-                { type: "email", message: "Email không hợp lệ!" }
+                { type: "email", message: "Email không hợp lệ!" },
               ]}
             >
               <Input placeholder="Nhập địa chỉ email" />
             </Form.Item>
 
             <Form.Item>
-              <Button 
-                type="primary" 
-                htmlType="submit"
-              >
+              <Button type="primary" htmlType="submit">
                 Tạo
               </Button>
             </Form.Item>
@@ -102,4 +103,4 @@ function CreateVerifierPage() {
   );
 }
 
-export default CreateVerifierPage; 
+export default CreateVerifierPage;

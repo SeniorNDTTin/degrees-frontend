@@ -66,9 +66,14 @@ function UserPage() {
               }
               try {
                 await deleteUserApi({ accessToken, id: record._id });
-                setReload(prev => !prev);
+                setReload((prev) => !prev);
                 toast.success("Xóa thành công!");
-              } catch {
+              } catch (error) {
+                if (error.status === 403) {
+                  toast.error("Bạn không có quyền");
+                  return;
+                }
+
                 toast.error("Có lỗi xảy ra!");
               }
             }}
@@ -87,10 +92,10 @@ function UserPage() {
         const {
           data: { data },
         } = await findUsersApi({ accessToken });
-        console.log('Users data:', data);
+        console.log("Users data:", data);
         setUsers(data.users.items);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error("Error fetching users:", error);
         toast.error("Có lỗi xảy ra!");
       } finally {
         setLoading(false);
@@ -112,10 +117,10 @@ function UserPage() {
             Tạo
           </Button>
         </div>
-        <Table 
-          dataSource={users} 
-          columns={columns} 
-          rowKey="_id" 
+        <Table
+          dataSource={users}
+          columns={columns}
+          rowKey="_id"
           loading={loading}
         />
       </div>
@@ -123,4 +128,4 @@ function UserPage() {
   );
 }
 
-export default UserPage; 
+export default UserPage;

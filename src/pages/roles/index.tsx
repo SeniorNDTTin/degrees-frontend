@@ -62,7 +62,12 @@ function RolePage() {
               try {
                 await deleteRoleApi({ accessToken, id: record._id });
                 setReload(!reload);
-              } catch {
+              } catch(error) {
+                if (error.status === 403) {
+                  toast.error("Bạn không có quyền");
+                  return;
+                }
+
                 toast.error("Có lỗi xảy ra!");
               }
 

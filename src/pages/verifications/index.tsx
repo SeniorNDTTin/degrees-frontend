@@ -5,7 +5,10 @@ import { toast } from "react-toastify";
 import type { ColumnsType } from "antd/es/table";
 
 import { getCookie } from "../../helpers/cookies";
-import { findVerificationsApi, deleteVerificationApi } from "../../services/verifications";
+import {
+  findVerificationsApi,
+  deleteVerificationApi,
+} from "../../services/verifications";
 import { findVerifierByIdApi } from "../../services/verifiers";
 import { findDegreeByIdApi } from "../../services/degrees";
 import { findCertificateByIdApi } from "../../services/certificates";
@@ -19,7 +22,7 @@ const { Title } = Typography;
 interface DataType {
   _id: string;
   key: string;
-  type: 'degree' | 'certificate';
+  type: "degree" | "certificate";
   verifierId: string;
   degreeId?: string;
   certificateId?: string;
@@ -41,13 +44,16 @@ function VerificationsPage() {
     setLoading(true);
     try {
       const response = await findVerificationsApi({ accessToken });
-      console.log('Verifications response:', response.data);
-      
+      console.log("Verifications response:", response.data);
+
       const verificationData = response.data.data.verifications;
-      console.log('Verifications data:', verificationData);
+      console.log("Verifications data:", verificationData);
 
       if (!verificationData || !Array.isArray(verificationData.items)) {
-        console.error('Invalid verifications data structure:', verificationData);
+        console.error(
+          "Invalid verifications data structure:",
+          verificationData
+        );
         toast.error("Dữ liệu không hợp lệ!");
         return;
       }
@@ -55,46 +61,52 @@ function VerificationsPage() {
       // Fetch additional details for each verification
       const verificationDetails = await Promise.all(
         verificationData.items.map(async (verification: IVerification) => {
-          let verifierName, degreeName, certificateName, studentEmail = 'N/A';
+          let verifierName,
+            degreeName,
+            certificateName,
+            studentEmail = "N/A";
 
           // Fetch verifier details
           if (verification.verifierId) {
             try {
               const verifierResponse = await findVerifierByIdApi({
                 accessToken,
-                id: verification.verifierId
+                id: verification.verifierId,
               });
               const verifier = verifierResponse.data.data;
               verifierName = verifier.verifierName;
             } catch (error) {
-              console.error('Error fetching verifier:', error);
+              console.error("Error fetching verifier:", error);
             }
           }
 
           // Fetch degree/certificate details based on type
-          if (verification.type === 'degree' && verification.degreeId) {
+          if (verification.type === "degree" && verification.degreeId) {
             try {
               const degreeResponse = await findDegreeByIdApi({
                 accessToken,
-                id: verification.degreeId
+                id: verification.degreeId,
               });
               const degree = degreeResponse.data.data;
               degreeName = degree.degreeName;
-              studentEmail = degree.studentEmail || 'N/A';
+              studentEmail = degree.studentEmail || "N/A";
             } catch (error) {
-              console.error('Error fetching degree:', error);
+              console.error("Error fetching degree:", error);
             }
-          } else if (verification.type === 'certificate' && verification.certificateId) {
+          } else if (
+            verification.type === "certificate" &&
+            verification.certificateId
+          ) {
             try {
               const certificateResponse = await findCertificateByIdApi({
                 accessToken,
-                id: verification.certificateId
+                id: verification.certificateId,
               });
               const certificate = certificateResponse.data.data;
               certificateName = certificate.title;
-              studentEmail = certificate.studentEmail || 'N/A';
+              studentEmail = certificate.studentEmail || "N/A";
             } catch (error) {
-              console.error('Error fetching certificate:', error);
+              console.error("Error fetching certificate:", error);
             }
           }
 
@@ -110,15 +122,15 @@ function VerificationsPage() {
             verifierName,
             degreeName,
             certificateName,
-            studentEmail
+            studentEmail,
           };
         })
       );
 
-      console.log('Verification details:', verificationDetails);
+      console.log("Verification details:", verificationDetails);
       setData(verificationDetails);
     } catch (error) {
-      console.error('Error fetching verifications:', error);
+      console.error("Error fetching verifications:", error);
       toast.error("Có lỗi xảy ra khi tải dữ liệu!");
     } finally {
       setLoading(false);
@@ -139,7 +151,11 @@ function VerificationsPage() {
       toast.success("Xóa thành công!");
       fetchData();
     } catch (error) {
-      console.error('Error deleting verification:', error);
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra khi xóa!");
     }
   };
@@ -150,7 +166,7 @@ function VerificationsPage() {
       dataIndex: "studentEmail",
       key: "studentEmail",
       render: (text: string) => {
-        if (text === 'N/A') return text;
+        if (text === "N/A") return text;
         return <a href={`mailto:${text}`}>{text}</a>;
       },
     },
@@ -159,7 +175,7 @@ function VerificationsPage() {
       dataIndex: "type",
       key: "type",
       render: (type: string) => (
-        <strong>{type === 'degree' ? 'Văn bằng' : 'Chứng chỉ'}</strong>
+        <strong>{type === "degree" ? "Văn bằng" : "Chứng chỉ"}</strong>
       ),
     },
     {
@@ -171,7 +187,11 @@ function VerificationsPage() {
       title: "Văn bằng/Chứng chỉ",
       key: "document",
       render: (_, record) => (
-        <strong>{record.type === 'degree' ? record.degreeName : record.certificateName}</strong>
+        <strong>
+          {record.type === "degree"
+            ? record.degreeName
+            : record.certificateName}
+        </strong>
       ),
     },
     {
@@ -202,15 +222,14 @@ function VerificationsPage() {
               color: "white",
               borderColor: "orange",
             }}
-            onClick={() => navigate(`/admin/verifications/update/${record._id}`)}
+            onClick={() =>
+              navigate(`/admin/verifications/update/${record._id}`)
+            }
           >
             Sửa
           </Button>
 
-          <Button
-            danger
-            onClick={() => handleDelete(record._id)}
-          >
+          <Button danger onClick={() => handleDelete(record._id)}>
             Xóa
           </Button>
         </Space>
@@ -247,4 +266,4 @@ function VerificationsPage() {
   );
 }
 
-export default VerificationsPage; 
+export default VerificationsPage;

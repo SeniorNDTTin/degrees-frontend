@@ -1,11 +1,23 @@
 import { useEffect, useState } from "react";
-import { Table, Button, Input, Modal, message, Typography, Space, Tag } from "antd";
+import {
+  Table,
+  Button,
+  Input,
+  Modal,
+  message,
+  Typography,
+  Space,
+  Tag,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import type { IIssuingAgency } from "../../interfaces/issuing-agencies";
-import { deleteIssuingAgency, getIssuingAgencies } from "../../services/issuing-agencies";
+import {
+  deleteIssuingAgency,
+  getIssuingAgencies,
+} from "../../services/issuing-agencies";
 import { getCookie } from "../../helpers/cookies";
 import "./issuing-agencies.scss";
 
@@ -27,20 +39,20 @@ const IssuingAgencies = () => {
   const fetchIssuingAgencies = async () => {
     try {
       setLoading(true);
-      const response = await getIssuingAgencies({ 
+      const response = await getIssuingAgencies({
         accessToken,
-        page, 
-        limit: 10, 
-        searchKey 
+        page,
+        limit: 10,
+        searchKey,
       });
-      
+
       console.log("API Response:", response);
-      
+
       const responseData = response.data;
       if (responseData?.data?.data?.issuingAgencies) {
         const { items, total } = responseData.data.data.issuingAgencies;
         console.log("Issuing Agencies data:", { items, total });
-        setIssuingAgencies(items.map(item => ({ ...item, key: item._id })));
+        setIssuingAgencies(items.map((item) => ({ ...item, key: item._id })));
         setTotal(total);
       } else {
         console.error("Invalid response format:", response);
@@ -48,7 +60,9 @@ const IssuingAgencies = () => {
       }
     } catch (error: any) {
       console.error("Error fetching issuing agencies:", error);
-      toast.error(error?.response?.data?.message || "Có lỗi xảy ra khi tải dữ liệu!");
+      toast.error(
+        error?.response?.data?.message || "Có lỗi xảy ra khi tải dữ liệu!"
+      );
     } finally {
       setLoading(false);
     }
@@ -70,7 +84,11 @@ const IssuingAgencies = () => {
       toast.success("Xóa thành công!");
       fetchIssuingAgencies();
     } catch (error) {
-      console.error("Error deleting issuing agency:", error);
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+      
       toast.error("Có lỗi xảy ra khi xóa!");
     }
   };
@@ -109,7 +127,9 @@ const IssuingAgencies = () => {
         <Space size="middle">
           <Button
             type="primary"
-            onClick={() => navigate(`/admin/issuing-agencies/find/${record._id}`)}
+            onClick={() =>
+              navigate(`/admin/issuing-agencies/find/${record._id}`)
+            }
           >
             Xem
           </Button>
@@ -119,14 +139,13 @@ const IssuingAgencies = () => {
               color: "white",
               borderColor: "orange",
             }}
-            onClick={() => navigate(`/admin/issuing-agencies/update/${record._id}`)}
+            onClick={() =>
+              navigate(`/admin/issuing-agencies/update/${record._id}`)
+            }
           >
             Sửa
           </Button>
-          <Button
-            danger
-            onClick={() => handleDelete(record._id)}
-          >
+          <Button danger onClick={() => handleDelete(record._id)}>
             Xóa
           </Button>
         </Space>
@@ -177,4 +196,4 @@ const IssuingAgencies = () => {
   );
 };
 
-export default IssuingAgencies; 
+export default IssuingAgencies;

@@ -6,7 +6,10 @@ import { useNavigate } from "react-router-dom";
 
 import { getCookie } from "../../helpers/cookies";
 import type { ICertificate } from "../../interfaces/certificates";
-import { deleteCertificateApi, findCertificatesApi } from "../../services/certificates";
+import {
+  deleteCertificateApi,
+  findCertificatesApi,
+} from "../../services/certificates";
 
 import "./certificates.scss";
 
@@ -73,10 +76,19 @@ function CertificatePage() {
                 return;
               }
               try {
-                await deleteCertificateApi({ accessToken, id: record._id });
+                await deleteCertificateApi({
+                  accessToken,
+                  id: record._id,
+                });
+
                 setReload(!reload);
                 toast.success("Xóa thành công!");
-              } catch {
+              } catch (error) {
+                if (error.status === 403) {
+                  toast.error("Bạn không có quyền");
+                  return;
+                }
+
                 toast.error("Có lỗi xảy ra!");
               }
             }}
