@@ -15,12 +15,15 @@ export const findRolesApi = async ({
   page?: number;
   limit?: number;
 }) => {
-  return await axios.get<IResponse<IFindRoles>>(
+  console.log('Fetching roles...');
+  const response = await axios.get<IResponse<IFindRoles>>(
     `${backendDomainV1}/roles/find`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
     }
   );
+  console.log('Roles response:', response.data);
+  return response;
 };
 
 export const findRoleByIdApi = async ({

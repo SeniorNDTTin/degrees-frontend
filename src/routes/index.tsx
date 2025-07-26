@@ -33,6 +33,11 @@ import CreateIssuingAgency from "../pages/issuing-agencies/CreateIssuingAgency";
 import FindIssuingAgency from "../pages/issuing-agencies/FindIssuingAgency";
 import UpdateIssuingAgency from "../pages/issuing-agencies/UpdateIssuingAgency";
 
+import UserPage from "../pages/users";
+import CreateUserPage from "../pages/users/CreateUser";
+import FindUserPage from "../pages/users/FindUser";
+import UpdateUserPage from "../pages/users/UpdateUser";
+
 function RoutesApp() {
   return (
     <>
@@ -78,6 +83,12 @@ function RoutesApp() {
             <Route path="issuing-agencies/create" element={<CreateIssuingAgency />} />
             <Route path="issuing-agencies/find/:id" element={<FindIssuingAgency />} />
             <Route path="issuing-agencies/update/:id" element={<UpdateIssuingAgency />} />
+
+            {/* Users */}
+            <Route path="users" element={<UserPage />} />
+            <Route path="users/create" element={<CreateUserPage />} />
+            <Route path="users/find/:id" element={<FindUserPage />} />
+            <Route path="users/update/:id" element={<UpdateUserPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
