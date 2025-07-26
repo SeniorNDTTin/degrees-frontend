@@ -40,7 +40,9 @@ function UpdateDegreePage() {
           major: data.major,
           GPA: data.GPA,
           classification: data.classification,
-          issuedDate: data.issuedDate ? new Date(data.issuedDate).toISOString().split("T")[0] : undefined,
+          issuedDate: data.issuedDate
+            ? new Date(data.issuedDate).toISOString().split("T")[0]
+            : undefined,
           status: data.status,
           studentEmail: data.studentEmail,
           issuerID: data.issuerID,
@@ -68,7 +70,12 @@ function UpdateDegreePage() {
       });
       navigate("/admin/degrees");
       toast.success("Cập nhật bằng cấp thành công!");
-    } catch {
+    } catch (error) {
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra!");
     }
   };
@@ -151,7 +158,9 @@ function UpdateDegreePage() {
           <Form.Item<FieldType>
             label="ID tổ chức phát hành"
             name="issuerID"
-            rules={[{ required: true, message: "Hãy nhập ID tổ chức phát hành!" }]}
+            rules={[
+              { required: true, message: "Hãy nhập ID tổ chức phát hành!" },
+            ]}
           >
             <Input />
           </Form.Item>

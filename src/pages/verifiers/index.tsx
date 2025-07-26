@@ -71,7 +71,12 @@ function VerifierPage() {
                 await deleteVerifierApi({ accessToken, id: record._id });
                 setReload(!reload);
                 toast.success("Xóa thành công!");
-              } catch {
+              } catch (error) {
+                if (error.status === 403) {
+                  toast.error("Bạn không có quyền");
+                  return;
+                }
+
                 toast.error("Có lỗi xảy ra!");
               }
             }}
@@ -91,7 +96,7 @@ function VerifierPage() {
           data: { data },
         } = await findVerifiersApi({ accessToken });
         setVerifiers(data.verifiers.items);
-      } catch(error) {
+      } catch (error) {
         toast.error("Có lỗi xảy ra!");
       } finally {
         setLoading(false);
@@ -116,9 +121,9 @@ function VerifierPage() {
       </div>
 
       <div className="verifier-page__table">
-        <Table 
-          dataSource={verifiers} 
-          columns={columns} 
+        <Table
+          dataSource={verifiers}
+          columns={columns}
           rowKey="_id"
           loading={loading}
           pagination={{
@@ -131,4 +136,4 @@ function VerifierPage() {
   );
 }
 
-export default VerifierPage; 
+export default VerifierPage;

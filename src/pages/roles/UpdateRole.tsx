@@ -55,7 +55,12 @@ function UpdateRolePage() {
       });
 
       toast.success("Cập nhật thành công!");
-    } catch {
+    } catch(error) {
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra!");
     }
   };

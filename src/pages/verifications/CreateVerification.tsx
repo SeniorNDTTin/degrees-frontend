@@ -19,7 +19,7 @@ const { Title } = Typography;
 const { TextArea } = Input;
 
 type FieldType = {
-  type: 'degree' | 'certificate';
+  type: "degree" | "certificate";
   verifierId: string;
   degreeId?: string;
   certificateId?: string;
@@ -46,11 +46,11 @@ function CreateVerificationPage() {
       setLoadingVerifiers(true);
       try {
         const response = await findVerifiersApi({ accessToken });
-        console.log('Verifiers response:', response.data);
+        console.log("Verifiers response:", response.data);
         const verifiersData = response.data.data.verifiers.items || [];
         setVerifiers(verifiersData);
       } catch (error) {
-        console.error('Error fetching verifiers:', error);
+        console.error("Error fetching verifiers:", error);
         toast.error("Có lỗi xảy ra khi tải danh sách người xác thực!");
       } finally {
         setLoadingVerifiers(false);
@@ -65,11 +65,11 @@ function CreateVerificationPage() {
       setLoadingDegrees(true);
       try {
         const response = await findDegreesApi({ accessToken });
-        console.log('Degrees response:', response.data);
+        console.log("Degrees response:", response.data);
         const degreesData = response.data.data.degrees.items || [];
         setDegrees(degreesData);
       } catch (error) {
-        console.error('Error fetching degrees:', error);
+        console.error("Error fetching degrees:", error);
         toast.error("Có lỗi xảy ra khi tải danh sách văn bằng!");
       } finally {
         setLoadingDegrees(false);
@@ -84,11 +84,11 @@ function CreateVerificationPage() {
       setLoadingCertificates(true);
       try {
         const response = await findCertificatesApi({ accessToken });
-        console.log('Certificates response:', response.data);
+        console.log("Certificates response:", response.data);
         const certificatesData = response.data.data.certificates.items || [];
         setCertificates(certificatesData);
       } catch (error) {
-        console.error('Error fetching certificates:', error);
+        console.error("Error fetching certificates:", error);
         toast.error("Có lỗi xảy ra khi tải danh sách chứng chỉ!");
       } finally {
         setLoadingCertificates(false);
@@ -100,10 +100,10 @@ function CreateVerificationPage() {
   // Handle degree change
   const handleDegreeChange = async (value: string) => {
     if (!value) return;
-    const selectedDegree = degrees.find(d => d._id === value);
+    const selectedDegree = degrees.find((d) => d._id === value);
     if (selectedDegree?.studentEmail) {
       form.setFieldsValue({
-        studentEmail: selectedDegree.studentEmail
+        studentEmail: selectedDegree.studentEmail,
       });
     }
   };
@@ -111,10 +111,10 @@ function CreateVerificationPage() {
   // Handle certificate change
   const handleCertificateChange = async (value: string) => {
     if (!value) return;
-    const selectedCertificate = certificates.find(c => c._id === value);
+    const selectedCertificate = certificates.find((c) => c._id === value);
     if (selectedCertificate?.studentEmail) {
       form.setFieldsValue({
-        studentEmail: selectedCertificate.studentEmail
+        studentEmail: selectedCertificate.studentEmail,
       });
     }
   };
@@ -122,22 +122,24 @@ function CreateVerificationPage() {
   // Validate student email
   const validateStudentEmail = async (_: any, value: string) => {
     if (!value) {
-      throw new Error('Email sinh viên là bắt buộc');
+      throw new Error("Email sinh viên là bắt buộc");
     }
 
-    const type = form.getFieldValue('type');
-    const degreeId = form.getFieldValue('degreeId');
-    const certificateId = form.getFieldValue('certificateId');
+    const type = form.getFieldValue("type");
+    const degreeId = form.getFieldValue("degreeId");
+    const certificateId = form.getFieldValue("certificateId");
 
-    if (type === 'degree' && degreeId) {
-      const selectedDegree = degrees.find(d => d._id === degreeId);
+    if (type === "degree" && degreeId) {
+      const selectedDegree = degrees.find((d) => d._id === degreeId);
       if (selectedDegree && selectedDegree.studentEmail !== value) {
-        throw new Error('Email sinh viên phải khớp với email trong văn bằng');
+        throw new Error("Email sinh viên phải khớp với email trong văn bằng");
       }
-    } else if (type === 'certificate' && certificateId) {
-      const selectedCertificate = certificates.find(c => c._id === certificateId);
+    } else if (type === "certificate" && certificateId) {
+      const selectedCertificate = certificates.find(
+        (c) => c._id === certificateId
+      );
       if (selectedCertificate && selectedCertificate.studentEmail !== value) {
-        throw new Error('Email sinh viên phải khớp với email trong chứng chỉ');
+        throw new Error("Email sinh viên phải khớp với email trong chứng chỉ");
       }
     }
   };
@@ -152,7 +154,11 @@ function CreateVerificationPage() {
       toast.success("Tạo mới thành công!");
       navigate("/admin/verifications");
     } catch (error) {
-      console.error('Error creating verification:', error);
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra khi tạo mới!");
     } finally {
       setLoading(false);
@@ -161,18 +167,28 @@ function CreateVerificationPage() {
 
   return (
     <div className="verification-page">
-      <div className="verification-page__header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+      <div
+        className="verification-page__header"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "16px",
+        }}
+      >
         <Title level={2}>Thêm mới xác thực</Title>
-        <Button 
+        <Button
           type="primary"
           onClick={() => navigate("/admin/verifications")}
-          style={{ borderRadius: '6px' }}
+          style={{ borderRadius: "6px" }}
         >
           Quay lại
         </Button>
       </div>
 
-      <div className="verification-page__form" style={{ background: '#fff', padding: '24px', borderRadius: '8px' }}>
+      <div
+        className="verification-page__form"
+        style={{ background: "#fff", padding: "24px", borderRadius: "8px" }}
+      >
         <Spin spinning={loading}>
           <Form<FieldType>
             form={form}
@@ -180,10 +196,10 @@ function CreateVerificationPage() {
             onFinish={onFinish}
             autoComplete="off"
             layout="vertical"
-            style={{ maxWidth: 'none' }}
+            style={{ maxWidth: "none" }}
             initialValues={{
-              type: 'degree',
-              status: false
+              type: "degree",
+              status: false,
             }}
           >
             <Form.Item
@@ -192,7 +208,7 @@ function CreateVerificationPage() {
               rules={[
                 { required: true, message: "Hãy nhập email học viên!" },
                 { type: "email", message: "Email không hợp lệ!" },
-                { validator: validateStudentEmail }
+                { validator: validateStudentEmail },
               ]}
             >
               <Input placeholder="Nhập email học viên" disabled />
@@ -219,7 +235,9 @@ function CreateVerificationPage() {
                 placeholder="Chọn người xác thực"
                 showSearch
                 filterOption={(input, option) =>
-                  (option?.children?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+                  (option?.children?.toString() ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
                 }
               >
                 {verifiers.map((v) => (
@@ -232,10 +250,12 @@ function CreateVerificationPage() {
 
             <Form.Item
               noStyle
-              shouldUpdate={(prevValues, currentValues) => prevValues.type !== currentValues.type}
+              shouldUpdate={(prevValues, currentValues) =>
+                prevValues.type !== currentValues.type
+              }
             >
-              {({ getFieldValue }) => 
-                getFieldValue('type') === 'degree' ? (
+              {({ getFieldValue }) =>
+                getFieldValue("type") === "degree" ? (
                   <Form.Item
                     label="Văn bằng"
                     name="degreeId"
@@ -247,7 +267,9 @@ function CreateVerificationPage() {
                       showSearch
                       onChange={handleDegreeChange}
                       filterOption={(input, option) =>
-                        (option?.children?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+                        (option?.children?.toString() ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
                       }
                     >
                       {degrees.map((d) => (
@@ -269,7 +291,9 @@ function CreateVerificationPage() {
                       showSearch
                       onChange={handleCertificateChange}
                       filterOption={(input, option) =>
-                        (option?.children?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+                        (option?.children?.toString() ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
                       }
                     >
                       {certificates.map((c) => (
@@ -291,19 +315,15 @@ function CreateVerificationPage() {
               <TextArea rows={4} placeholder="Nhập mô tả" />
             </Form.Item>
 
-            <Form.Item
-              label="Trạng thái"
-              name="status"
-              valuePropName="checked"
-            >
+            <Form.Item label="Trạng thái" name="status" valuePropName="checked">
               <Switch />
             </Form.Item>
 
-            <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-              <Button 
-                type="primary" 
+            <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
+              <Button
+                type="primary"
                 htmlType="submit"
-                style={{ minWidth: '100px', borderRadius: '6px' }}
+                style={{ minWidth: "100px", borderRadius: "6px" }}
               >
                 Tạo mới
               </Button>
@@ -315,4 +335,4 @@ function CreateVerificationPage() {
   );
 }
 
-export default CreateVerificationPage; 
+export default CreateVerificationPage;

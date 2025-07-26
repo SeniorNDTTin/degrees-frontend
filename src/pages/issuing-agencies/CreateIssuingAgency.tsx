@@ -22,7 +22,11 @@ const CreateIssuingAgency = () => {
       toast.success("Tạo mới thành công!");
       navigate("/admin/issuing-agencies");
     } catch (error) {
-      console.error("Error creating issuing agency:", error);
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra khi tạo mới!");
     } finally {
       setSubmitting(false);
@@ -58,7 +62,7 @@ const CreateIssuingAgency = () => {
             name="email"
             rules={[
               { required: true, message: "Vui lòng nhập email!" },
-              { type: "email", message: "Email không hợp lệ!" }
+              { type: "email", message: "Email không hợp lệ!" },
             ]}
           >
             <Input />
@@ -85,11 +89,7 @@ const CreateIssuingAgency = () => {
 
           <Form.Item>
             <Space>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={submitting}
-              >
+              <Button type="primary" htmlType="submit" loading={submitting}>
                 Tạo mới
               </Button>
               <Button onClick={() => navigate("/admin/issuing-agencies")}>
@@ -103,4 +103,4 @@ const CreateIssuingAgency = () => {
   );
 };
 
-export default CreateIssuingAgency; 
+export default CreateIssuingAgency;

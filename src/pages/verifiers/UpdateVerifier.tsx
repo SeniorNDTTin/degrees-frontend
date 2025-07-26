@@ -5,7 +5,10 @@ import { toast } from "react-toastify";
 import type { FormProps } from "antd";
 
 import { getCookie } from "../../helpers/cookies";
-import { findVerifierByIdApi, updateVerifierApi } from "../../services/verifiers";
+import {
+  findVerifierByIdApi,
+  updateVerifierApi,
+} from "../../services/verifiers";
 import type { IVerifier } from "../../interfaces/verifiers";
 
 import "./verifier.scss";
@@ -54,7 +57,12 @@ function UpdateVerifierPage() {
       });
       toast.success("Cập nhật thành công!");
       navigate("/admin/verifiers");
-    } catch {
+    } catch (error) {
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi xảy ra!");
     } finally {
       setLoading(false);
@@ -65,10 +73,7 @@ function UpdateVerifierPage() {
     <div className="verifier-page">
       <div className="verifier-page__header">
         <Title level={2}>Cập nhật người xác thực</Title>
-        <Button 
-          type="primary"
-          onClick={() => navigate("/admin/verifiers")}
-        >
+        <Button type="primary" onClick={() => navigate("/admin/verifiers")}>
           Quay lại
         </Button>
       </div>
@@ -86,7 +91,9 @@ function UpdateVerifierPage() {
               <Form.Item<FieldType>
                 label="Tên người xác thực"
                 name="verifierName"
-                rules={[{ required: true, message: "Hãy nhập tên người xác thực!" }]}
+                rules={[
+                  { required: true, message: "Hãy nhập tên người xác thực!" },
+                ]}
               >
                 <Input placeholder="Nhập tên người xác thực" />
               </Form.Item>
@@ -104,17 +111,14 @@ function UpdateVerifierPage() {
                 name="verifierEmail"
                 rules={[
                   { required: true, message: "Hãy nhập email!" },
-                  { type: "email", message: "Email không hợp lệ!" }
+                  { type: "email", message: "Email không hợp lệ!" },
                 ]}
               >
                 <Input placeholder="Nhập địa chỉ email" />
               </Form.Item>
 
               <Form.Item>
-                <Button 
-                  type="primary" 
-                  htmlType="submit"
-                >
+                <Button type="primary" htmlType="submit">
                   Cập nhật
                 </Button>
               </Form.Item>
@@ -126,4 +130,4 @@ function UpdateVerifierPage() {
   );
 }
 
-export default UpdateVerifierPage; 
+export default UpdateVerifierPage;

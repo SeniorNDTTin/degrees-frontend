@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button, Form, Input, Select, Typography, DatePicker } from "antd";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 import { getCookie } from "../../helpers/cookies";
 import { findUserByIdApi, updateUserApi } from "../../services/users";
@@ -33,8 +33,8 @@ function UpdateUserPage() {
       try {
         const response = await findUserByIdApi({ accessToken, id });
         const userData = response.data.data;
-        console.log('Current user data:', userData);
-        
+        console.log("Current user data:", userData);
+
         // Set form values
         form.setFieldsValue({
           fullName: userData.fullName,
@@ -42,9 +42,9 @@ function UpdateUserPage() {
           gender: userData.gender,
           birthday: dayjs(userData.birthday),
         });
-        console.log('Form values after set:', form.getFieldsValue());
+        console.log("Form values after set:", form.getFieldsValue());
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
         toast.error("Có lỗi khi tải thông tin người dùng!");
       } finally {
         setLoading(false);
@@ -58,25 +58,29 @@ function UpdateUserPage() {
     if (!id) return;
     setLoading(true);
     try {
-      console.log('Form values before submit:', values);
+      console.log("Form values before submit:", values);
       const response = await updateUserApi({
         accessToken,
         id,
         fullName: values.fullName,
         email: values.email,
         gender: values.gender,
-        birthday: values.birthday.format('YYYY-MM-DD'),
+        birthday: values.birthday.format("YYYY-MM-DD"),
       });
-      console.log('Update response:', response.data);
-      
+      console.log("Update response:", response.data);
+
       // Reload user data after update
       const updatedUser = await findUserByIdApi({ accessToken, id });
-      console.log('Updated user data:', updatedUser.data.data);
-      
+      console.log("Updated user data:", updatedUser.data.data);
+
       toast.success("Cập nhật thành công!");
       navigate("/admin/users");
     } catch (error) {
-      console.error('Error updating user:', error);
+      if (error.status === 403) {
+        toast.error("Bạn không có quyền");
+        return;
+      }
+
       toast.error("Có lỗi khi cập nhật!");
     } finally {
       setLoading(false);
@@ -84,17 +88,22 @@ function UpdateUserPage() {
   };
 
   const onValuesChange = (changedValues: any, allValues: any) => {
-    console.log('Form values changed:', changedValues);
-    console.log('Current form values:', allValues);
+    console.log("Form values changed:", changedValues);
+    console.log("Current form values:", allValues);
   };
 
   return (
     <div style={{ padding: "24px" }}>
-      <div style={{ marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div
+        style={{
+          marginBottom: "16px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Title>Cập nhật người dùng</Title>
-        <Button onClick={() => navigate("/admin/users")}>
-          Quay lại
-        </Button>
+        <Button onClick={() => navigate("/admin/users")}>Quay lại</Button>
       </div>
 
       <Form
@@ -120,7 +129,7 @@ function UpdateUserPage() {
           name="email"
           rules={[
             { required: true, message: "Vui lòng nhập email!" },
-            { type: "email", message: "Email không hợp lệ!" }
+            { type: "email", message: "Email không hợp lệ!" },
           ]}
         >
           <Input />
@@ -155,4 +164,4 @@ function UpdateUserPage() {
   );
 }
 
-export default UpdateUserPage; 
+export default UpdateUserPage;
