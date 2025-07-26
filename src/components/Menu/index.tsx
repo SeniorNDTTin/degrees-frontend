@@ -5,6 +5,8 @@ import { LuLayoutDashboard } from "react-icons/lu";
 import { MdVerified, MdVerifiedUser } from "react-icons/md";
 import { BsBuilding } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 type MenuItem = GetProp<MenuProps, "items">[number];
 
@@ -67,6 +69,11 @@ function AppMenu() {
       onClick: () => {
         navigate("/admin/verifications");
       },
+    },
+    {
+      key: "users",
+      icon: <UserOutlined />,
+      label: <Link to="/admin/users">Người dùng</Link>,
     },
   ];
 

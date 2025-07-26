@@ -5,20 +5,22 @@ export interface IRole {
   permissions: string[];
   createdBy: {
     userId: string;
-    createdAt: Date;
+    createdAt: string;
     _id: string;
   };
   isDeleted: boolean;
-  updatedBy: { userId: string; updatedAt: Date }[];
-  createdAt: Date;
-  updatedAt: Date;
+  updatedBy: {
+    userId: string;
+    updatedAt: string;
+  }[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 export interface IFindRoles {
   roles: {
     total: number;
-    page: number;
-    limit: number;
     items: IRole[];
   };
 }
