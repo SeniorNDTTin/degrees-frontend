@@ -16,7 +16,6 @@ interface ICreateVerificationApiProps {
   degreeId?: string;
   certificateId?: string;
   description: string;
-  status: boolean;
   studentEmail: string;
 }
 

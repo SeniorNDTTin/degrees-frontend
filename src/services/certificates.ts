@@ -1,7 +1,10 @@
 import axios from "axios";
 
 import { backendDomainV1 } from "../constants/common";
-import type { ICertificate, IFindCertificates } from "../interfaces/certificates";
+import type {
+  ICertificate,
+  IFindCertificates,
+} from "../interfaces/certificates";
 import type { IResponse } from "../interfaces/response";
 
 export const findCertificatesApi = async ({
@@ -57,26 +60,16 @@ export const createCertificateApi = async ({
   score,
   scoreDetails,
   issuedDate,
-  certHash,
-  blockchainTxID,
-  status,
   studentEmail,
   issuerID,
-  studentSignature,
-  issuerSignature,
 }: {
   accessToken: string;
   title: string;
   score: number;
   scoreDetails?: string;
   issuedDate: string;
-  certHash: string;
-  blockchainTxID: string;
-  status: string;
   studentEmail: string;
   issuerID: string;
-  studentSignature: string;
-  issuerSignature: string;
 }) => {
   return await axios.post(
     `${backendDomainV1}/certificates/create`,
@@ -85,13 +78,8 @@ export const createCertificateApi = async ({
       score,
       scoreDetails,
       issuedDate,
-      certHash,
-      blockchainTxID,
-      status,
       studentEmail,
       issuerID,
-      studentSignature,
-      issuerSignature,
     },
     {
       headers: { Authorization: `Bearer ${accessToken}` },
@@ -106,13 +94,8 @@ export const updateCertificateApi = async ({
   score,
   scoreDetails,
   issuedDate,
-  certHash,
-  blockchainTxID,
-  status,
   studentEmail,
   issuerID,
-  studentSignature,
-  issuerSignature,
 }: {
   accessToken: string;
   id: string;
@@ -120,14 +103,8 @@ export const updateCertificateApi = async ({
   score?: number;
   scoreDetails?: string;
   issuedDate?: string;
-  certHash?: string;
-  blockchainTxID?: string;
-  status?: string;
   studentEmail?: string;
   issuerID?: string;
-  issuerType?: string;
-  studentSignature?: string;
-  issuerSignature?: string;
 }) => {
   return await axios.patch(
     `${backendDomainV1}/certificates/update/${id}`,
@@ -136,13 +113,8 @@ export const updateCertificateApi = async ({
       score,
       scoreDetails,
       issuedDate,
-      certHash,
-      blockchainTxID,
-      status,
       studentEmail,
       issuerID,
-      studentSignature,
-      issuerSignature,
     },
     {
       headers: { Authorization: `Bearer ${accessToken}` },
