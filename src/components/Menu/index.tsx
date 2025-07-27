@@ -32,8 +32,13 @@ function AppMenu() {
       },
     },
     {
+      key: "users",
+      icon: <UserOutlined />,
+      label: <Link to="/admin/users">Người dùng</Link>,
+    },
+    {
       key: "/admin/certificates",
-      icon: <FaCertificate/>,
+      icon: <FaCertificate />,
       label: "Chứng chỉ",
       onClick: () => {
         navigate("/admin/certificates");
@@ -41,10 +46,11 @@ function AppMenu() {
     },
     {
       key: "/admin/degrees",
-      icon: <FaCertificate/>,
+      icon: <FaCertificate />,
       label: "Bằng cấp",
       onClick: () => {
-        navigate("/admin/degrees");}
+        navigate("/admin/degrees");
+      },
     },
     {
       key: "/admin/issuing-agencies",
@@ -69,11 +75,6 @@ function AppMenu() {
       onClick: () => {
         navigate("/admin/verifications");
       },
-    },
-    {
-      key: "users",
-      icon: <UserOutlined />,
-      label: <Link to="/admin/users">Người dùng</Link>,
     },
   ];
 

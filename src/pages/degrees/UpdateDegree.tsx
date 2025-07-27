@@ -1,10 +1,11 @@
 import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Form, Input, Select, Typography, type FormProps } from "antd";
 
 import { getCookie } from "../../helpers/cookies";
 import { findDegreeByIdApi, updateDegreeApi } from "../../services/degrees";
+import { getIssuingAgencies } from "../../services/issuing-agencies";
 
 const { Title } = Typography;
 
@@ -14,7 +15,6 @@ type FieldType = {
   GPA?: number;
   classification?: string;
   issuedDate?: string;
-  status?: string;
   studentEmail?: string;
   issuerID?: string;
 };
@@ -27,6 +27,21 @@ function UpdateDegreePage() {
   const location = useLocation();
   const pathnames = location.pathname.split("/");
   const id = pathnames[pathnames.length - 1];
+  const [issuingAgencies, setIssuingAgencies] = useState([]);
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      try {
+        const {
+          data: { data },
+        } = await getIssuingAgencies({ accessToken });
+        setIssuingAgencies(data.issuingAgencies.items);
+      } catch {
+        toast.error("Có lỗi xảy ra!");
+      }
+    };
+    fetchApi();
+  }, [accessToken]);
 
   useEffect(() => {
     const fetchApi = async () => {
@@ -56,15 +71,16 @@ function UpdateDegreePage() {
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     try {
+      const GPA = +values.GPA;
+
       await updateDegreeApi({
         accessToken,
         id,
         degreeName: values.degreeName,
         major: values.major,
-        GPA: values.GPA,
+        GPA,
         classification: values.classification,
         issuedDate: values.issuedDate,
-        status: values.status,
         studentEmail: values.studentEmail,
         issuerID: values.issuerID,
       });
@@ -133,21 +149,7 @@ function UpdateDegreePage() {
           >
             <Input type="date" />
           </Form.Item>
-          <Form.Item<FieldType>
-            label="Trạng thái"
-            name="status"
-            rules={[{ required: true, message: "Hãy chọn trạng thái!" }]}
-          >
-            <Select
-              style={{ width: "100%" }}
-              placeholder="Chọn trạng thái"
-              options={[
-                { label: "Active", value: "Active" },
-                { label: "Revoked", value: "Revoked" },
-                { label: "Pending", value: "Pending" },
-              ]}
-            />
-          </Form.Item>
+
           <Form.Item<FieldType>
             label="Email học viên"
             name="studentEmail"
@@ -155,15 +157,23 @@ function UpdateDegreePage() {
           >
             <Input type="email" />
           </Form.Item>
+
           <Form.Item<FieldType>
-            label="ID tổ chức phát hành"
+            label="Cơ quan"
             name="issuerID"
-            rules={[
-              { required: true, message: "Hãy nhập ID tổ chức phát hành!" },
-            ]}
+            rules={[{ required: true, message: "Hãy chọn cơ quan!" }]}
           >
-            <Input />
+            <Select
+              allowClear
+              style={{ width: "100%" }}
+              placeholder="Hãy chọn"
+              options={issuingAgencies.map((issuingAgency: any) => ({
+                label: issuingAgency.name,
+                value: issuingAgency._id,
+              }))}
+            />
           </Form.Item>
+
           <Form.Item label={null}>
             <div className="degrees__form-button">
               <Button type="primary" htmlType="submit">

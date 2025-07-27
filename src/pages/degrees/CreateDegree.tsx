@@ -4,6 +4,8 @@ import { Button, Form, Input, Select, Typography, type FormProps } from "antd";
 
 import { getCookie } from "../../helpers/cookies";
 import { createDegreeApi } from "../../services/degrees";
+import { getIssuingAgencies } from "../../services/issuing-agencies";
+import { useEffect, useState } from "react";
 
 const { Title } = Typography;
 
@@ -13,7 +15,6 @@ type FieldType = {
   GPA?: number;
   classification?: string;
   issuedDate?: string;
-  status?: string;
   studentEmail?: string;
   issuerID?: string;
 };
@@ -22,16 +23,33 @@ function CreateDegreePage() {
   const navigate = useNavigate();
   const accessToken = getCookie("access_token");
 
+  const [issuingAgencies, setIssuingAgencies] = useState([]);
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      try {
+        const {
+          data: { data },
+        } = await getIssuingAgencies({ accessToken });
+        setIssuingAgencies(data.issuingAgencies.items);
+      } catch {
+        toast.error("Có lỗi xảy ra!");
+      }
+    };
+    fetchApi();
+  }, [accessToken]);
+
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     try {
+      const GPA = +values.GPA;
+
       await createDegreeApi({
         accessToken,
         degreeName: values.degreeName as string,
         major: values.major as string,
-        GPA: values.GPA as number,
+        GPA,
         classification: values.classification as string,
         issuedDate: values.issuedDate as string,
-        status: values.status as string,
         studentEmail: values.studentEmail as string,
         issuerID: values.issuerID as string,
       });
@@ -95,21 +113,7 @@ function CreateDegreePage() {
           >
             <Input type="date" />
           </Form.Item>
-          <Form.Item<FieldType>
-            label="Trạng thái"
-            name="status"
-            rules={[{ required: true, message: "Hãy chọn trạng thái!" }]}
-          >
-            <Select
-              style={{ width: "100%" }}
-              placeholder="Chọn trạng thái"
-              options={[
-                { label: "Active", value: "Active" },
-                { label: "Revoked", value: "Revoked" },
-                { label: "Pending", value: "Pending" },
-              ]}
-            />
-          </Form.Item>
+
           <Form.Item<FieldType>
             label="Email học viên"
             name="studentEmail"
@@ -118,13 +122,19 @@ function CreateDegreePage() {
             <Input type="email" />
           </Form.Item>
           <Form.Item<FieldType>
-            label="ID tổ chức phát hành"
+            label="Cơ quan"
             name="issuerID"
-            rules={[
-              { required: true, message: "Hãy nhập ID tổ chức phát hành!" },
-            ]}
+            rules={[{ required: true, message: "Hãy chọn cơ quan!" }]}
           >
-            <Input />
+            <Select
+              allowClear
+              style={{ width: "100%" }}
+              placeholder="Hãy chọn"
+              options={issuingAgencies.map((issuingAgency: any) => ({
+                label: issuingAgency.name,
+                value: issuingAgency._id,
+              }))}
+            />
           </Form.Item>
           <Form.Item label={null}>
             <div className="degrees__form-button">

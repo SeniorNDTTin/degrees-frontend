@@ -58,7 +58,6 @@ export const createDegreeApi = async ({
   GPA,
   classification,
   issuedDate,
-  status,
   studentEmail,
   issuerID,
 }: {
@@ -68,7 +67,6 @@ export const createDegreeApi = async ({
   GPA: number;
   classification: string;
   issuedDate: string;
-  status: string;
   studentEmail: string;
   issuerID: string;
 }) => {
@@ -80,7 +78,6 @@ export const createDegreeApi = async ({
       GPA,
       classification,
       issuedDate,
-      status,
       studentEmail,
       issuerID,
     },
@@ -98,7 +95,6 @@ export const updateDegreeApi = async ({
   GPA,
   classification,
   issuedDate,
-  status,
   studentEmail,
   issuerID,
 }: {
@@ -109,7 +105,6 @@ export const updateDegreeApi = async ({
   GPA?: number;
   classification?: string;
   issuedDate?: string;
-  status?: string;
   studentEmail?: string;
   issuerID?: string;
 }) => {
@@ -121,7 +116,6 @@ export const updateDegreeApi = async ({
       GPA,
       classification,
       issuedDate,
-      status,
       studentEmail,
       issuerID,
     },

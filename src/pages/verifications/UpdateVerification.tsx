@@ -35,7 +35,6 @@ type FieldType = {
   degreeId?: string;
   certificateId?: string;
   description: string;
-  status: boolean;
   studentEmail: string;
 };
 
@@ -45,7 +44,6 @@ interface FormData {
   degreeId?: string;
   certificateId?: string;
   description: string;
-  status: boolean;
   studentEmail: string;
 }
 
@@ -219,7 +217,6 @@ function UpdateVerificationPage() {
             degreeId: verificationData.degreeId,
             certificateId: verificationData.certificateId,
             description: verificationData.description,
-            status: verificationData.status,
             studentEmail,
           };
           console.log("Setting form values:", formValues);
@@ -279,7 +276,6 @@ function UpdateVerificationPage() {
         type: values.type,
         verifierId: values.verifierId,
         description: values.description,
-        status: values.status,
         studentEmail: values.studentEmail,
       };
 
@@ -522,10 +518,6 @@ function UpdateVerificationPage() {
               rules={[{ required: true, message: "Hãy nhập mô tả!" }]}
             >
               <TextArea rows={4} placeholder="Nhập mô tả" />
-            </Form.Item>
-
-            <Form.Item label="Trạng thái" name="status" valuePropName="checked">
-              <Switch />
             </Form.Item>
 
             <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>

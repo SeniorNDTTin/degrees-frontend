@@ -4,6 +4,8 @@ import { Button, Form, Input, Select, Typography, type FormProps } from "antd";
 
 import { getCookie } from "../../helpers/cookies";
 import { createCertificateApi } from "../../services/certificates";
+import { useEffect, useState } from "react";
+import { getIssuingAgencies } from "../../services/issuing-agencies";
 
 const { Title } = Typography;
 
@@ -12,34 +14,39 @@ type FieldType = {
   score?: number;
   scoreDetails?: string;
   issuedDate?: string;
-  certHash?: string;
-  blockchainTxID?: string;
-  status?: string;
   studentEmail?: string;
   issuerID?: string;
-  studentSignature?: string;
-  issuerSignature?: string;
 };
 
 function CreateCertificatePage() {
   const navigate = useNavigate();
   const accessToken = getCookie("access_token");
+  const [issuingAgencies, setIssuingAgencies] = useState([]);
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      try {
+        const { data: { data } } = await getIssuingAgencies({ accessToken });
+        setIssuingAgencies(data.issuingAgencies.items);
+      } catch {
+        toast.error("Có lỗi xảy ra!");
+      }
+    };
+    fetchApi();
+  }, [accessToken]);
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     try {
+      const score = +values.score;
+
       await createCertificateApi({
         accessToken,
         title: values.title as string,
-        score: values.score as number,
+        score,
         scoreDetails: values.scoreDetails,
         issuedDate: values.issuedDate as string,
-        certHash: values.certHash as string,
-        blockchainTxID: values.blockchainTxID as string,
-        status: values.status as string,
         studentEmail: values.studentEmail as string,
         issuerID: values.issuerID as string,
-        studentSignature: values.studentSignature as string,
-        issuerSignature: values.issuerSignature as string,
       });
       navigate("/admin/certificates");
       toast.success("Tạo chứng chỉ thành công!");
@@ -74,7 +81,7 @@ function CreateCertificatePage() {
             name="score"
             rules={[{ required: true, message: "Hãy nhập điểm!" }]}
           >
-            <Input type="number" step="0.1" />
+            <Input type="number" />
           </Form.Item>
           <Form.Item<FieldType> label="Chi tiết điểm" name="scoreDetails">
             <Input.TextArea rows={4} />
@@ -87,68 +94,29 @@ function CreateCertificatePage() {
             <Input type="date" />
           </Form.Item>
           <Form.Item<FieldType>
-            label="Mã băm chứng chỉ"
-            name="certHash"
-            rules={[{ required: true, message: "Hãy nhập mã băm chứng chỉ!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="ID giao dịch Blockchain"
-            name="blockchainTxID"
-            rules={[
-              { required: true, message: "Hãy nhập ID giao dịch Blockchain!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="Trạng thái"
-            name="status"
-            rules={[{ required: true, message: "Hãy chọn trạng thái!" }]}
-          >
-            <Select
-              style={{ width: "100%" }}
-              placeholder="Chọn trạng thái"
-              options={[
-                { label: "Active", value: "Active" },
-                { label: "Revoked", value: "Revoked" },
-                { label: "Pending", value: "Pending" },
-              ]}
-            />
-          </Form.Item>
-          <Form.Item<FieldType>
             label="Email học viên"
             name="studentEmail"
             rules={[{ required: true, message: "Hãy nhập email học viên!" }]}
           >
             <Input type="email" />
           </Form.Item>
+
           <Form.Item<FieldType>
-            label="ID tổ chức phát hành"
+            label="Cơ quan"
             name="issuerID"
-            rules={[
-              { required: true, message: "Hãy nhập ID tổ chức phát hành!" },
-            ]}
+            rules={[{ required: true, message: "Hãy chọn cơ quan!" }]}
           >
-            <Input />
+            <Select
+              allowClear
+              style={{ width: "100%" }}
+              placeholder="Hãy chọn"
+              options={issuingAgencies.map((issuingAgency: any) => ({
+                label: issuingAgency.name,
+                value: issuingAgency._id,
+              }))}
+            />
           </Form.Item>
-          <Form.Item<FieldType>
-            label="Chữ ký học viên"
-            name="studentSignature"
-            rules={[{ required: true, message: "Hãy nhập chữ ký học viên!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="Chữ ký tổ chức phát hành"
-            name="issuerSignature"
-            rules={[
-              { required: true, message: "Hãy nhập chữ ký tổ chức phát hành!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
+
           <Form.Item label={null}>
             <div className="certificates__form-button">
               <Button type="primary" htmlType="submit">

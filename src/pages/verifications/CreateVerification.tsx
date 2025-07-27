@@ -24,7 +24,6 @@ type FieldType = {
   degreeId?: string;
   certificateId?: string;
   description: string;
-  status: boolean;
   studentEmail: string;
 };
 
@@ -314,11 +313,7 @@ function CreateVerificationPage() {
             >
               <TextArea rows={4} placeholder="Nhập mô tả" />
             </Form.Item>
-
-            <Form.Item label="Trạng thái" name="status" valuePropName="checked">
-              <Switch />
-            </Form.Item>
-
+            
             <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
               <Button
                 type="primary"

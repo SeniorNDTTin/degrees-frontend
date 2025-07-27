@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Form, Input, Select, Typography, type FormProps } from "antd";
 
@@ -8,6 +8,7 @@ import {
   findCertificateByIdApi,
   updateCertificateApi,
 } from "../../services/certificates";
+import { getIssuingAgencies } from "../../services/issuing-agencies";
 
 const { Title } = Typography;
 
@@ -16,14 +17,8 @@ type FieldType = {
   score?: number;
   scoreDetails?: string;
   issuedDate?: string;
-  certHash?: string;
-  blockchainTxID?: string;
-  status?: string;
   studentEmail?: string;
   issuerID?: string;
-  issuerType?: string;
-  studentSignature?: string;
-  issuerSignature?: string;
 };
 
 function UpdateCertificatePage() {
@@ -34,6 +29,21 @@ function UpdateCertificatePage() {
   const location = useLocation();
   const pathnames = location.pathname.split("/");
   const id = pathnames[pathnames.length - 1];
+  const [issuingAgencies, setIssuingAgencies] = useState([]);
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      try {
+        const {
+          data: { data },
+        } = await getIssuingAgencies({ accessToken });
+        setIssuingAgencies(data.issuingAgencies.items);
+      } catch {
+        toast.error("Có lỗi xảy ra!");
+      }
+    };
+    fetchApi();
+  }, [accessToken]);
 
   useEffect(() => {
     const fetchApi = async () => {
@@ -73,14 +83,8 @@ function UpdateCertificatePage() {
         score: values.score,
         scoreDetails: values.scoreDetails,
         issuedDate: values.issuedDate,
-        certHash: values.certHash,
-        blockchainTxID: values.blockchainTxID,
-        status: values.status,
         studentEmail: values.studentEmail,
         issuerID: values.issuerID,
-        issuerType: values.issuerType,
-        studentSignature: values.studentSignature,
-        issuerSignature: values.issuerSignature,
       });
       navigate("/admin/certificates");
       toast.success("Cập nhật chứng chỉ thành công!");
@@ -128,37 +132,7 @@ function UpdateCertificatePage() {
           >
             <Input type="date" />
           </Form.Item>
-          <Form.Item<FieldType>
-            label="Mã băm chứng chỉ"
-            name="certHash"
-            rules={[{ required: true, message: "Hãy nhập mã băm chứng chỉ!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="ID giao dịch Blockchain"
-            name="blockchainTxID"
-            rules={[
-              { required: true, message: "Hãy nhập ID giao dịch Blockchain!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="Trạng thái"
-            name="status"
-            rules={[{ required: true, message: "Hãy chọn trạng thái!" }]}
-          >
-            <Select
-              style={{ width: "100%" }}
-              placeholder="Chọn trạng thái"
-              options={[
-                { label: "Active", value: "Active" },
-                { label: "Revoked", value: "Revoked" },
-                { label: "Pending", value: "Pending" },
-              ]}
-            />
-          </Form.Item>
+
           <Form.Item<FieldType>
             label="Email học viên"
             name="studentEmail"
@@ -166,31 +140,23 @@ function UpdateCertificatePage() {
           >
             <Input type="email" />
           </Form.Item>
+
           <Form.Item<FieldType>
-            label="ID tổ chức phát hành"
+            label="Cơ quan"
             name="issuerID"
-            rules={[
-              { required: true, message: "Hãy nhập ID tổ chức phát hành!" },
-            ]}
+            rules={[{ required: true, message: "Hãy chọn cơ quan!" }]}
           >
-            <Input />
+            <Select
+              allowClear
+              style={{ width: "100%" }}
+              placeholder="Hãy chọn"
+              options={issuingAgencies.map((issuingAgency: any) => ({
+                label: issuingAgency.name,
+                value: issuingAgency._id,
+              }))}
+            />
           </Form.Item>
-          <Form.Item<FieldType>
-            label="Chữ ký học viên"
-            name="studentSignature"
-            rules={[{ required: true, message: "Hãy nhập chữ ký học viên!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="Chữ ký tổ chức phát hành"
-            name="issuerSignature"
-            rules={[
-              { required: true, message: "Hãy nhập chữ ký tổ chức phát hành!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
+
           <Form.Item label={null}>
             <div className="certificates__form-button">
               <Button type="primary" htmlType="submit">
