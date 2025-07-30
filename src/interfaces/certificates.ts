@@ -11,6 +11,9 @@ export interface ICertificate {
   issuerID: string;
   studentSignature: string;
   issuerSignature: string;
+  qrCode?: string;
+  certificateHash?: string;
+  issuingAgencyName?: string;
   createdBy: {
     userId: string;
     createdAt: string;

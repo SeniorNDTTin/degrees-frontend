@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Form, Input, Select, Typography } from "antd";
 import { toast } from "react-toastify";
@@ -25,6 +25,7 @@ type FieldType = {
 
 function FindCertificatePage() {
   const [form] = Form.useForm();
+  const [qrCode, setQrCode] = useState("");
   const accessToken = getCookie("access_token");
 
   const location = useLocation();
@@ -42,7 +43,9 @@ function FindCertificatePage() {
           title: data.title,
           score: data.score,
           scoreDetails: data.scoreDetails,
-          issuedDate: data.issuedDate ? new Date(data.issuedDate).toISOString().split("T")[0] : undefined,
+          issuedDate: data.issuedDate
+            ? new Date(data.issuedDate).toISOString().split("T")[0]
+            : undefined,
           certHash: data.certHash,
           blockchainTxID: data.blockchainTxID,
           status: data.status,
@@ -51,6 +54,7 @@ function FindCertificatePage() {
           studentSignature: data.studentSignature,
           issuerSignature: data.issuerSignature,
         });
+        setQrCode(data.qrCode as string);
       } catch {
         toast.error("Có lỗi xảy ra!");
       }
@@ -77,10 +81,7 @@ function FindCertificatePage() {
           >
             <Input type="number" step="0.1" disabled={true} />
           </Form.Item>
-          <Form.Item<FieldType>
-            label="Chi tiết điểm"
-            name="scoreDetails"
-          >
+          <Form.Item<FieldType> label="Chi tiết điểm" name="scoreDetails">
             <Input.TextArea rows={4} disabled={true} />
           </Form.Item>
           <Form.Item<FieldType>
@@ -100,7 +101,9 @@ function FindCertificatePage() {
           <Form.Item<FieldType>
             label="ID giao dịch Blockchain"
             name="blockchainTxID"
-            rules={[{ required: true, message: "Hãy nhập ID giao dịch Blockchain!" }]}
+            rules={[
+              { required: true, message: "Hãy nhập ID giao dịch Blockchain!" },
+            ]}
           >
             <Input disabled={true} />
           </Form.Item>
@@ -130,7 +133,9 @@ function FindCertificatePage() {
           <Form.Item<FieldType>
             label="ID tổ chức phát hành"
             name="issuerID"
-            rules={[{ required: true, message: "Hãy nhập ID tổ chức phát hành!" }]}
+            rules={[
+              { required: true, message: "Hãy nhập ID tổ chức phát hành!" },
+            ]}
           >
             <Input disabled={true} />
           </Form.Item>
@@ -144,11 +149,23 @@ function FindCertificatePage() {
           <Form.Item<FieldType>
             label="Chữ ký tổ chức phát hành"
             name="issuerSignature"
-            rules={[{ required: true, message: "Hãy nhập chữ ký tổ chức phát hành!" }]}
+            rules={[
+              { required: true, message: "Hãy nhập chữ ký tổ chức phát hành!" },
+            ]}
           >
             <Input disabled={true} />
           </Form.Item>
         </Form>
+
+        {qrCode && qrCode !== "n" && (
+          <>
+            <h3>Mã QR</h3>
+            <div
+              style={{ width: "50%", height: "50%" }}
+              dangerouslySetInnerHTML={{ __html: qrCode }}
+            />
+          </>
+        )}
       </div>
     </>
   );

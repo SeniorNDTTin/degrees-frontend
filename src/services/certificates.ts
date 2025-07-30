@@ -121,3 +121,18 @@ export const updateCertificateApi = async ({
     }
   );
 };
+
+export const findCertificateByCertificateHash = async ({
+  accessToken,
+  certificateHash,
+}: {
+  accessToken: string;
+  certificateHash: string;
+}) => {
+  return await axios.get<IResponse<ICertificate>>(
+    `${backendDomainV1}/certificates/find/by/certificate-hash/${certificateHash}`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
+};

@@ -34,7 +34,10 @@ function AppMenu() {
     {
       key: "users",
       icon: <UserOutlined />,
-      label: <Link to="/admin/users">Người dùng</Link>,
+      label: "Người dùng",
+      onClick: () => {
+        navigate("/admin/users");
+      },
     },
     {
       key: "/admin/certificates",

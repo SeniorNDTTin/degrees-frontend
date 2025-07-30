@@ -27,7 +27,6 @@ interface DataType {
   degreeId?: string;
   certificateId?: string;
   description: string;
-  status: boolean;
   verifierName?: string;
   degreeName?: string;
   certificateName?: string;
@@ -118,7 +117,6 @@ function VerificationsPage() {
             degreeId: verification.degreeId,
             certificateId: verification.certificateId,
             description: verification.description,
-            status: verification.status,
             verifierName,
             degreeName,
             certificateName,
@@ -142,13 +140,13 @@ function VerificationsPage() {
   }, [accessToken]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc muốn xóa?")) {
+    if (!confirm("Bạn có chắc muốn thu hồi?")) {
       return;
     }
 
     try {
       await deleteVerificationApi({ accessToken, id });
-      toast.success("Xóa thành công!");
+      toast.success("Thu hồi thành công!");
       fetchData();
     } catch (error) {
       if (error.status === 403) {
@@ -156,7 +154,7 @@ function VerificationsPage() {
         return;
       }
 
-      toast.error("Có lỗi xảy ra khi xóa!");
+      toast.error("Có lỗi xảy ra khi thu hồi!");
     }
   };
 
@@ -195,16 +193,6 @@ function VerificationsPage() {
       ),
     },
     {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (status: boolean) => (
-        <Tag color={status ? "success" : "error"}>
-          {status ? "Hoạt động" : "Không hoạt động"}
-        </Tag>
-      ),
-    },
-    {
       title: "Hành động",
       key: "action",
       render: (_, record) => (
@@ -216,7 +204,7 @@ function VerificationsPage() {
             Xem
           </Button>
 
-          <Button
+          {/* <Button
             style={{
               backgroundColor: "orange",
               color: "white",
@@ -227,10 +215,10 @@ function VerificationsPage() {
             }
           >
             Sửa
-          </Button>
+          </Button> */}
 
           <Button danger onClick={() => handleDelete(record._id)}>
-            Xóa
+            Thu hồi
           </Button>
         </Space>
       ),

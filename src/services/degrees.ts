@@ -124,3 +124,18 @@ export const updateDegreeApi = async ({
     }
   );
 };
+
+export const findDegreeByDegreeHash = async ({
+  accessToken,
+  degreeHash,
+}: {
+  accessToken: string;
+  degreeHash: string;
+}) => {
+  return await axios.get<IResponse<IDegree>>(
+    `${backendDomainV1}/degrees/find/by/degree-hash/${degreeHash}`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
+};

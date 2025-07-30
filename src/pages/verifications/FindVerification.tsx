@@ -43,7 +43,10 @@ function FindVerificationPage() {
       setLoading(true);
       try {
         // Fetch verification details
-        const verificationResponse = await findVerificationByIdApi({ accessToken, id });
+        const verificationResponse = await findVerificationByIdApi({
+          accessToken,
+          id,
+        });
         const verificationData = verificationResponse.data.data;
         setVerification(verificationData);
 
@@ -52,40 +55,43 @@ function FindVerificationPage() {
           try {
             const verifierResponse = await findVerifierByIdApi({
               accessToken,
-              id: verificationData.verifierId
+              id: verificationData.verifierId,
             });
             if (verifierResponse.data?.data) {
               setVerifier(verifierResponse.data.data);
             }
           } catch (error) {
-            console.error('Error fetching verifier:', error);
+            console.error("Error fetching verifier:", error);
           }
         }
 
         // Fetch degree/certificate details
-        if (verificationData.type === 'degree' && verificationData.degreeId) {
+        if (verificationData.type === "degree" && verificationData.degreeId) {
           try {
             const degreeResponse = await findDegreeByIdApi({
               accessToken,
-              id: verificationData.degreeId
+              id: verificationData.degreeId,
             });
             if (degreeResponse.data?.data) {
               setDegree(degreeResponse.data.data);
             }
           } catch (error) {
-            console.error('Error fetching degree:', error);
+            console.error("Error fetching degree:", error);
           }
-        } else if (verificationData.type === 'certificate' && verificationData.certificateId) {
+        } else if (
+          verificationData.type === "certificate" &&
+          verificationData.certificateId
+        ) {
           try {
             const certificateResponse = await findCertificateByIdApi({
               accessToken,
-              id: verificationData.certificateId
+              id: verificationData.certificateId,
             });
             if (certificateResponse.data?.data) {
               setCertificate(certificateResponse.data.data);
             }
           } catch (error) {
-            console.error('Error fetching certificate:', error);
+            console.error("Error fetching certificate:", error);
           }
         }
 
@@ -94,44 +100,46 @@ function FindVerificationPage() {
           try {
             const creatorResponse = await findUserByIdApi({
               accessToken,
-              id: verificationData.createdBy.userId
+              id: verificationData.createdBy.userId,
             });
             if (creatorResponse.data?.data) {
               setCreator({
                 userId: verificationData.createdBy.userId,
                 userName: creatorResponse.data.data.fullName,
-                timestamp: verificationData.createdBy.createdAt
+                timestamp: verificationData.createdBy.createdAt,
               });
             }
           } catch (error) {
-            console.error('Error fetching creator:', error);
+            console.error("Error fetching creator:", error);
           }
         }
 
         // Fetch updaters info
-        if (verificationData.updatedBy && verificationData.updatedBy.length > 0) {
+        if (
+          verificationData.updatedBy &&
+          verificationData.updatedBy.length > 0
+        ) {
           try {
             const updaterInfos = await Promise.all(
               verificationData.updatedBy.map(async (update) => {
                 const updaterResponse = await findUserByIdApi({
                   accessToken,
-                  id: update.userId
+                  id: update.userId,
                 });
                 return {
                   userId: update.userId,
-                  userName: updaterResponse.data?.data?.fullName || 'Unknown',
-                  timestamp: update.updatedAt
+                  userName: updaterResponse.data?.data?.fullName || "Unknown",
+                  timestamp: update.updatedAt,
                 };
               })
             );
             setUpdaters(updaterInfos);
           } catch (error) {
-            console.error('Error fetching updaters:', error);
+            console.error("Error fetching updaters:", error);
           }
         }
-
       } catch (error) {
-        console.error('Error fetching verification:', error);
+        console.error("Error fetching verification:", error);
         toast.error("Có lỗi xảy ra khi tải dữ liệu!");
       } finally {
         setLoading(false);
@@ -144,10 +152,7 @@ function FindVerificationPage() {
     <div className="verification-page">
       <div className="verification-page__header">
         <Title level={2}>Chi tiết xác thực</Title>
-        <Button 
-          type="primary"
-          onClick={() => navigate("/admin/verifications")}
-        >
+        <Button type="primary" onClick={() => navigate("/admin/verifications")}>
           Quay lại
         </Button>
       </div>
@@ -156,25 +161,35 @@ function FindVerificationPage() {
         <div className="verification-page__content">
           {verification && (
             <Descriptions bordered column={1}>
+              <Descriptions.Item label="Mã giấy tờ">
+                {degree?._id || certificate?._id || "N/A"}
+              </Descriptions.Item>
+
               <Descriptions.Item label="Email học viên">
-                {degree?.studentEmail || certificate?.studentEmail || 'N/A'}
+                {degree?.studentEmail || certificate?.studentEmail || "N/A"}
               </Descriptions.Item>
 
               <Descriptions.Item label="Loại xác thực">
-                {verification.type === 'degree' ? 'Văn bằng' : 'Chứng chỉ'}
+                {verification.type === "degree" ? "Văn bằng" : "Chứng chỉ"}
               </Descriptions.Item>
 
               <Descriptions.Item label="Người xác thực">
-                {verifier ? `${verifier.verifierName} - ${verifier.organization}` : 'Không có thông tin'}
+                {verifier
+                  ? `${verifier.verifierName} - ${verifier.organization}`
+                  : "Không có thông tin"}
               </Descriptions.Item>
 
-              {verification.type === 'degree' ? (
+              {verification.type === "degree" ? (
                 <Descriptions.Item label="Văn bằng">
-                  {degree ? `${degree.degreeName} - ${degree.major}` : 'Không có thông tin'}
+                  {degree
+                    ? `${degree.degreeName} - ${degree.major}`
+                    : "Không có thông tin"}
                 </Descriptions.Item>
               ) : (
                 <Descriptions.Item label="Chứng chỉ">
-                  {certificate ? `${certificate.title} - Điểm: ${certificate.score}` : 'Không có thông tin'}
+                  {certificate
+                    ? `${certificate.title} - Điểm: ${certificate.score}`
+                    : "Không có thông tin"}
                 </Descriptions.Item>
               )}
 
@@ -182,15 +197,10 @@ function FindVerificationPage() {
                 {verification.description}
               </Descriptions.Item>
 
-              <Descriptions.Item label="Trạng thái">
-                <Tag color={verification.status ? "success" : "error"}>
-                  {verification.status ? "Hoạt động" : "Không hoạt động"}
-                </Tag>
-              </Descriptions.Item>
-
               {creator && (
                 <Descriptions.Item label="Người tạo">
-                  {creator.userName} - {new Date(creator.timestamp).toLocaleString()}
+                  {creator.userName} -{" "}
+                  {new Date(creator.timestamp).toLocaleString()}
                 </Descriptions.Item>
               )}
 
@@ -198,7 +208,8 @@ function FindVerificationPage() {
                 <Descriptions.Item label="Người cập nhật">
                   {updaters.map((updater, index) => (
                     <div key={index}>
-                      {updater.userName} - {new Date(updater.timestamp).toLocaleString()}
+                      {updater.userName} -{" "}
+                      {new Date(updater.timestamp).toLocaleString()}
                     </div>
                   ))}
                 </Descriptions.Item>
@@ -211,4 +222,4 @@ function FindVerificationPage() {
   );
 }
 
-export default FindVerificationPage; 
+export default FindVerificationPage;
