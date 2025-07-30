@@ -10,6 +10,9 @@ export interface IDegree {
   issuerID: string;
   studentSignature: string;
   issuerSignature: string;
+  degreeHash?: string;
+  qrCode?: string;
+  issuingAgencyName?: string;
   createdBy: { userId: string; createdAt: string };
   updatedBy?: { userId: string; updatedAt: string }[];
   isDeleted?: boolean;

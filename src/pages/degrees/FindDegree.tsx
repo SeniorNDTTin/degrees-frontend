@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Form, Input, Select, Typography } from "antd";
 import { toast } from "react-toastify";
@@ -21,6 +21,7 @@ type FieldType = {
 
 function FindDegreePage() {
   const [form] = Form.useForm();
+  const [qrCode, setQrCode] = useState("");
   const accessToken = getCookie("access_token");
 
   const location = useLocation();
@@ -39,11 +40,14 @@ function FindDegreePage() {
           major: data.major,
           GPA: data.GPA,
           classification: data.classification,
-          issuedDate: data.issuedDate ? new Date(data.issuedDate).toISOString().split("T")[0] : undefined,
+          issuedDate: data.issuedDate
+            ? new Date(data.issuedDate).toISOString().split("T")[0]
+            : undefined,
           status: data.status,
           studentEmail: data.studentEmail,
           issuerID: data.issuerID,
         });
+        setQrCode(data.qrCode as string);
       } catch {
         toast.error("Có lỗi xảy ra!");
       }
@@ -126,11 +130,23 @@ function FindDegreePage() {
           <Form.Item<FieldType>
             label="ID tổ chức phát hành"
             name="issuerID"
-            rules={[{ required: true, message: "Hãy nhập ID tổ chức phát hành!" }]}
+            rules={[
+              { required: true, message: "Hãy nhập ID tổ chức phát hành!" },
+            ]}
           >
             <Input disabled={true} />
           </Form.Item>
         </Form>
+
+        {qrCode && qrCode !== "n" && (
+          <>
+            <h3>Mã QR</h3>
+            <div
+              style={{ width: "50%", height: "50%" }}
+              dangerouslySetInnerHTML={{ __html: qrCode }}
+            />
+          </>
+        )}
       </div>
     </>
   );

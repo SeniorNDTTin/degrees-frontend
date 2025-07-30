@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import ClientLogin from "../pages/client-login";
+import ClientSearch from "../pages/client-search";
+
 import LayoutApp from "../layouts";
 import RolePage from "../pages/roles";
 import LoginPage from "../pages/login";
@@ -43,6 +46,9 @@ function RoutesApp() {
     <>
       <BrowserRouter>
         <Routes>
+          <Route path="client-login" element={<ClientLogin />} />
+          <Route path="client-search" element={<ClientSearch />} />
+
           <Route path="admin" element={<LayoutApp />}>
             <Route path="auth">
               <Route path="login" element={<LoginPage />} />
@@ -58,13 +64,25 @@ function RoutesApp() {
             <Route path="verifiers" element={<VerifierPage />} />
             <Route path="verifiers/create" element={<CreateVerifierPage />} />
             <Route path="verifiers/find/:id" element={<FindVerifierPage />} />
-            <Route path="verifiers/update/:id" element={<UpdateVerifierPage />} />
+            <Route
+              path="verifiers/update/:id"
+              element={<UpdateVerifierPage />}
+            />
 
             {/* Certificates */}
             <Route path="certificates" element={<CertificatePage />} />
-            <Route path="certificates/create" element={<CreateCertificatePage />} />
-            <Route path="certificates/find/:id" element={<FindCertificatePage />} />
-            <Route path="certificates/update/:id" element={<UpdateCertificatePage />} />
+            <Route
+              path="certificates/create"
+              element={<CreateCertificatePage />}
+            />
+            <Route
+              path="certificates/find/:id"
+              element={<FindCertificatePage />}
+            />
+            <Route
+              path="certificates/update/:id"
+              element={<UpdateCertificatePage />}
+            />
 
             {/* Degrees */}
             <Route path="degrees" element={<DegreePage />} />
@@ -74,15 +92,33 @@ function RoutesApp() {
 
             {/* Verifications */}
             <Route path="verifications" element={<VerificationPage />} />
-            <Route path="verifications/create" element={<CreateVerificationPage />} />
-            <Route path="verifications/find/:id" element={<FindVerificationPage />} />
-            <Route path="verifications/update/:id" element={<UpdateVerificationPage />} />
+            <Route
+              path="verifications/create"
+              element={<CreateVerificationPage />}
+            />
+            <Route
+              path="verifications/find/:id"
+              element={<FindVerificationPage />}
+            />
+            <Route
+              path="verifications/update/:id"
+              element={<UpdateVerificationPage />}
+            />
 
             {/* Issuing Agencies */}
             <Route path="issuing-agencies" element={<IssuingAgencies />} />
-            <Route path="issuing-agencies/create" element={<CreateIssuingAgency />} />
-            <Route path="issuing-agencies/find/:id" element={<FindIssuingAgency />} />
-            <Route path="issuing-agencies/update/:id" element={<UpdateIssuingAgency />} />
+            <Route
+              path="issuing-agencies/create"
+              element={<CreateIssuingAgency />}
+            />
+            <Route
+              path="issuing-agencies/find/:id"
+              element={<FindIssuingAgency />}
+            />
+            <Route
+              path="issuing-agencies/update/:id"
+              element={<UpdateIssuingAgency />}
+            />
 
             {/* Users */}
             <Route path="users" element={<UserPage />} />
