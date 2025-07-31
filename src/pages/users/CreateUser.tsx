@@ -1,25 +1,18 @@
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Button, Form, Input, Select, Typography, DatePicker } from "antd";
+import { Button, Form, Input, Select, Typography, DatePicker, Card } from "antd";
 import dayjs from "dayjs";
 
 import { getCookie } from "../../helpers/cookies";
 import { createUserApi } from "../../services/users";
 import { findRolesApi } from "../../services/roles";
 import type { IRole } from "../../interfaces/roles";
+import type { ICreateUserRequest } from "../../interfaces/users";
+import { EUserGender } from "../../interfaces/users";
 
 const { Title } = Typography;
 const { Option } = Select;
-
-type FieldType = {
-  fullName: string;
-  email: string;
-  password: string;
-  gender: "male" | "female";
-  birthday: dayjs.Dayjs;
-  roleId: string;
-};
 
 function CreateUserPage() {
   const navigate = useNavigate();
@@ -41,116 +34,124 @@ function CreateUserPage() {
     fetchRoles();
   }, [accessToken]);
 
-  const onFinish = async (values: FieldType) => {
+  const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      console.log("Form values:", values);
+      const userData: ICreateUserRequest = {
+        fullName: values.fullName.trim(),
+        email: values.email.trim().toLowerCase(),
+        password: values.password,
+        gender: values.gender as EUserGender,
+        birthday: values.birthday.toDate(),
+        roleId: values.roleId
+      };
+
       await createUserApi({
         accessToken,
-        fullName: values.fullName,
-        email: values.email,
-        password: values.password,
-        gender: values.gender,
-        birthday: values.birthday.format("YYYY-MM-DD"),
-        roleId: values.roleId,
+        ...userData
       });
+      
       toast.success("Tạo người dùng thành công!");
       navigate("/admin/users");
-    } catch (error) {
-      if (error.status === 403) {
-        toast.error("Bạn không có quyền");
-        return;
-      }
-
-      toast.error("Có lỗi khi tạo người dùng!");
+    } catch (error: any) {
+      console.error("Error creating user:", error);
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tạo người dùng");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: "24px" }}>
-      <div
-        style={{
-          marginBottom: "16px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Title>Tạo người dùng mới</Title>
-        <Button onClick={() => navigate("/admin/users")}>Quay lại</Button>
-      </div>
-
+    <Card title="Tạo người dùng mới" extra={
+      <Button onClick={() => navigate("/admin/users")}>
+        Quay lại
+      </Button>
+    }>
       <Form
         form={form}
         name="createUser"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
+        layout="vertical"
         onFinish={onFinish}
         disabled={loading}
+        requiredMark="optional"
       >
-        <Form.Item<FieldType>
+        <Form.Item
           label="Họ và tên"
           name="fullName"
-          rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+          rules={[
+            { required: true, message: "Vui lòng nhập họ và tên!" },
+            { whitespace: true, message: "Họ và tên không được chỉ chứa khoảng trắng!" }
+          ]}
         >
-          <Input />
+          <Input placeholder="Nhập họ và tên" />
         </Form.Item>
 
-        <Form.Item<FieldType>
+        <Form.Item
           label="Email"
           name="email"
           rules={[
             { required: true, message: "Vui lòng nhập email!" },
-            { type: "email", message: "Email không hợp lệ!" },
+            { type: "email", message: "Email không hợp lệ!" }
           ]}
         >
-          <Input />
+          <Input placeholder="Nhập email" />
         </Form.Item>
 
-        <Form.Item<FieldType>
+        <Form.Item
           label="Mật khẩu"
           name="password"
           rules={[
             { required: true, message: "Vui lòng nhập mật khẩu!" },
+            { min: 8, message: "Mật khẩu phải có ít nhất 8 ký tự!" },
             {
-              pattern:
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-              message:
-                "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt!",
-            },
+              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+              message: "Mật khẩu phải bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt!"
+            }
           ]}
         >
-          <Input.Password />
+          <Input.Password placeholder="Nhập mật khẩu" />
         </Form.Item>
 
-        <Form.Item<FieldType>
+        <Form.Item
           label="Giới tính"
           name="gender"
           rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
         >
-          <Select>
-            <Option value="male">Nam</Option>
-            <Option value="female">Nữ</Option>
+          <Select placeholder="Chọn giới tính">
+            <Option value={EUserGender.MALE}>Nam</Option>
+            <Option value={EUserGender.FEMALE}>Nữ</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item<FieldType>
+        <Form.Item
           label="Ngày sinh"
           name="birthday"
-          rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}
+          rules={[
+            { required: true, message: "Vui lòng chọn ngày sinh!" },
+            {
+              validator: (_, value) => {
+                if (value && value.isAfter(dayjs())) {
+                  return Promise.reject("Ngày sinh không thể là ngày trong tương lai!");
+                }
+                return Promise.resolve();
+              }
+            }
+          ]}
         >
-          <DatePicker format="DD/MM/YYYY" />
+          <DatePicker 
+            style={{ width: '100%' }}
+            format="DD/MM/YYYY"
+            placeholder="Chọn ngày sinh"
+            disabledDate={date => date && date.isAfter(dayjs())}
+          />
         </Form.Item>
 
-        <Form.Item<FieldType>
+        <Form.Item
           label="Vai trò"
           name="roleId"
           rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
         >
-          <Select>
+          <Select placeholder="Chọn vai trò">
             {roles.map((role) => (
               <Option key={role._id} value={role._id}>
                 {role.name}
@@ -159,13 +160,18 @@ function CreateUserPage() {
           </Select>
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit" loading={loading}>
-            Tạo
-          </Button>
+        <Form.Item>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+            <Button onClick={() => navigate("/admin/users")}>
+              Hủy
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Tạo
+            </Button>
+          </div>
         </Form.Item>
       </Form>
-    </div>
+    </Card>
   );
 }
 

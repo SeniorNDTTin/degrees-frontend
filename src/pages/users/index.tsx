@@ -1,4 +1,4 @@
-import { Typography } from "antd";
+import { Typography, Tag } from "antd";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { Button, Space, Table } from "antd";
@@ -7,6 +7,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getCookie } from "../../helpers/cookies";
 import type { IUser } from "../../interfaces/users";
 import { deleteUserApi, findUsersApi } from "../../services/users";
+import { findRolesApi } from "../../services/roles";
+import type { IRole } from "../../interfaces/roles";
 
 import "./users.scss";
 
@@ -18,7 +20,13 @@ function UserPage() {
   const [reload, setReload] = useState(false);
   const accessToken = getCookie("access_token");
   const [users, setUsers] = useState<IUser[]>([]);
+  const [roles, setRoles] = useState<Record<string, IRole>>({});
   const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0
+  });
 
   const columns = [
     {
@@ -36,6 +44,16 @@ function UserPage() {
       dataIndex: "gender",
       key: "gender",
       render: (gender: string) => (gender === "female" ? "Nữ" : "Nam"),
+    },
+    {
+      title: "Vai trò",
+      dataIndex: "roleId",
+      key: "roleId",
+      render: (roleId: string) => (
+        <Tag color={roleId ? "blue" : "default"}>
+          {roles[roleId]?.name || "Chưa có vai trò"}
+        </Tag>
+      ),
     },
     {
       title: "Hành động",
@@ -87,22 +105,68 @@ function UserPage() {
 
   useEffect(() => {
     const fetchApi = async () => {
+      if (!accessToken) {
+        toast.error("Bạn chưa đăng nhập!");
+        navigate("/login");
+        return;
+      }
+
       setLoading(true);
       try {
+        // Fetch users with pagination
         const {
-          data: { data },
-        } = await findUsersApi({ accessToken });
-        console.log("Users data:", data);
-        setUsers(data.users.items);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        toast.error("Có lỗi xảy ra!");
+          data: { data: userData },
+        } = await findUsersApi({ 
+          accessToken,
+          page: pagination.current,
+          limit: pagination.pageSize
+        });
+
+        if (!userData?.users?.items) {
+          throw new Error("Invalid user data format");
+        }
+
+        setUsers(userData.users.items);
+        setPagination(prev => ({
+          ...prev,
+          total: userData.users.total
+        }));
+
+        // Fetch roles if not already loaded
+        if (Object.keys(roles).length === 0) {
+          const {
+            data: { data: rolesData },
+          } = await findRolesApi({ accessToken });
+
+          if (!rolesData?.roles?.items) {
+            throw new Error("Invalid roles data format");
+          }
+
+          // Convert roles array to object with _id as key
+          const rolesMap = rolesData.roles.items.reduce((acc, role) => {
+            acc[role._id] = role;
+            return acc;
+          }, {} as Record<string, IRole>);
+
+          setRoles(rolesMap);
+        }
+      } catch (error: any) {
+        console.error("Error fetching data:", error);
+        if (error?.response?.status === 401) {
+          toast.error("Phiên đăng nhập đã hết hạn!");
+          navigate("/login");
+        } else if (error?.response?.status === 403) {
+          toast.error("Bạn không có quyền truy cập!");
+          navigate("/");
+        } else {
+          toast.error("Có lỗi xảy ra khi tải dữ liệu!");
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchApi();
-  }, [accessToken, reload, location.key]); // Thêm location.key để reload khi quay lại trang
+  }, [accessToken, pagination.current, pagination.pageSize, reload, location.key, navigate]);
 
   return (
     <>
@@ -122,6 +186,16 @@ function UserPage() {
           columns={columns}
           rowKey="_id"
           loading={loading}
+          pagination={{
+            ...pagination,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `Tổng ${total} người dùng`
+          }}
+          onChange={(pagination) => {
+            setPagination(pagination);
+            setReload(prev => !prev);
+          }}
         />
       </div>
     </>

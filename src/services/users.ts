@@ -13,8 +13,20 @@ interface IFindUsersResponse {
   };
 }
 
-export const findUsersApi = async ({ accessToken }: { accessToken: string }) => {
+export const findUsersApi = async ({ 
+  accessToken,
+  page = 1,
+  limit = 10
+}: { 
+  accessToken: string;
+  page?: number;
+  limit?: number;
+}) => {
   return axios.get<IResponse<IFindUsersResponse>>(`${backendDomainV1}/users/find`, {
+    params: {
+      page,
+      limit
+    },
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -37,43 +49,23 @@ export const findUserByIdApi = async ({
 
 export const createUserApi = async ({
   accessToken,
-  fullName,
-  email,
-  password,
-  gender,
-  birthday,
-  roleId,
+  ...data
 }: {
   accessToken: string;
-  fullName: string;
-  email: string;
-  password: string;
-  gender: "male" | "female";
-  birthday: string;
-  roleId: string;
-}) => {
-  const requestData = {
-    fullName,
-    email,
-    password,
-    gender,
-    birthday,
-    roleId,
-  };
-  console.log('Create user request:', requestData);
-  
-  const response = await axios.post<IResponse<IUser>>(
+} & ICreateUserRequest) => {
+  return await axios.post<IResponse<IUser>>(
     `${backendDomainV1}/users/create`,
-    requestData,
     {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      ...data,
+      fullName: data.fullName.trim(),
+      email: data.email.trim().toLowerCase(),
+      password: data.password.trim(),
+      roleId: data.roleId.trim()
+    },
+    {
+      headers: { Authorization: `Bearer ${accessToken}` }
     }
   );
-  
-  console.log('Create user response:', response.data);
-  return response;
 };
 
 export const updateUserApi = async ({
@@ -83,6 +75,7 @@ export const updateUserApi = async ({
   email,
   gender,
   birthday,
+  roleId,
 }: {
   accessToken: string;
   id: string;
@@ -90,12 +83,14 @@ export const updateUserApi = async ({
   email?: string;
   gender?: "male" | "female";
   birthday?: string;
+  roleId?: string;
 }) => {
   const requestData = {
     fullName,
     email,
     gender,
     birthday,
+    roleId,
   };
   console.log('Update user request:', requestData);
 

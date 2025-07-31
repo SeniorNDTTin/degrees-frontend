@@ -32,9 +32,21 @@ const FindIssuingAgency = () => {
           toast.error('Không tìm thấy thông tin cơ sở cấp bằng!');
           navigate('/admin/issuing-agencies');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching issuing agency:", error);
-        toast.error("Có lỗi xảy ra khi tải dữ liệu!");
+        if (error?.response?.status === 404) {
+          toast.error("Không tìm thấy thông tin cơ sở cấp bằng!");
+        } else if (error?.response?.status === 401) {
+          toast.error("Phiên đăng nhập đã hết hạn!");
+          navigate("/login");
+          return;
+        } else if (error?.response?.status === 403) {
+          toast.error("Bạn không có quyền truy cập!");
+          navigate("/");
+          return;
+        } else {
+          toast.error(error?.response?.data?.message || "Có lỗi xảy ra khi tải dữ liệu!");
+        }
         navigate("/admin/issuing-agencies");
       } finally {
         setLoading(false);
