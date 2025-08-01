@@ -5,7 +5,9 @@ import { Button, Descriptions, Typography, Spin, Tag } from "antd";
 
 import { getCookie } from "../../helpers/cookies";
 import { findUserByIdApi } from "../../services/users";
+import { findRoleByIdApi } from "../../services/roles";
 import type { IUser } from "../../interfaces/users";
+import type { IRole } from "../../interfaces/roles";
 
 const { Title } = Typography;
 
@@ -21,6 +23,7 @@ function FindUserPage() {
   const accessToken = getCookie("access_token");
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<IUser>();
+  const [userRole, setUserRole] = useState<IRole>();
   const [userInfoMap, setUserInfoMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -32,6 +35,16 @@ function FindUserPage() {
         const userResponse = await findUserByIdApi({ accessToken, id });
         const userData = userResponse.data.data;
         setUser(userData);
+
+        // Fetch role information if user has a roleId
+        if (userData.roleId) {
+          try {
+            const roleResponse = await findRoleByIdApi({ accessToken, id: userData.roleId });
+            setUserRole(roleResponse.data.data);
+          } catch (error) {
+            console.error('Error fetching role:', error);
+          }
+        }
 
         // Tạo danh sách các userId cần lấy thông tin
         const userIds = new Set<string>();
@@ -99,6 +112,11 @@ function FindUserPage() {
             <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
             <Descriptions.Item label="Giới tính">
               {user.gender === "female" ? "Nữ" : "Nam"}
+            </Descriptions.Item>
+            <Descriptions.Item label="Vai trò">
+              <Tag color={userRole ? "blue" : "default"}>
+                {userRole ? userRole.name : "Chưa có vai trò"}
+              </Tag>
             </Descriptions.Item>
             <Descriptions.Item label="Ngày sinh">
               {user.birthday ? new Date(user.birthday).toLocaleDateString("vi-VN") : "N/A"}

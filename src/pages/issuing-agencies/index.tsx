@@ -39,9 +39,9 @@ const IssuingAgencies = () => {
 
       console.log("API Response:", response);
 
-      const responseData = response.data;
-      if (responseData?.data?.data?.issuingAgencies) {
-        const { items, total } = responseData.data.data.issuingAgencies;
+      const { data: { data: { issuingAgencies } } } = response;
+      if (issuingAgencies?.items) {
+        const { items, total } = issuingAgencies;
         console.log("Issuing Agencies data:", { items, total });
         setIssuingAgencies(items.map((item) => ({ ...item, key: item._id })));
         setTotal(total);
@@ -66,7 +66,7 @@ const IssuingAgencies = () => {
   }, [page, searchKey, accessToken]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc muốn xóa?")) {
+    if (!window.confirm("Bạn có chắc muốn xóa?")) {
       return;
     }
 
@@ -74,13 +74,18 @@ const IssuingAgencies = () => {
       await deleteIssuingAgency({ accessToken, id });
       toast.success("Xóa thành công!");
       fetchIssuingAgencies();
-    } catch (error) {
-      if (error.status === 403) {
-        toast.error("Bạn không có quyền");
+    } catch (error: any) {
+      console.error("Error deleting issuing agency:", error);
+      if (error?.response?.status === 403) {
+        toast.error("Bạn không có quyền thực hiện thao tác này!");
+        return;
+      } else if (error?.response?.status === 401) {
+        toast.error("Phiên đăng nhập đã hết hạn!");
+        navigate("/login");
         return;
       }
 
-      toast.error("Có lỗi xảy ra khi xóa!");
+      toast.error(error?.response?.data?.message || "Có lỗi xảy ra khi xóa!");
     }
   };
 
@@ -89,25 +94,27 @@ const IssuingAgencies = () => {
       title: "Tên cơ sở",
       dataIndex: "name",
       key: "name",
+      render: (text: string) => text || "Chưa cập nhật",
     },
     {
       title: "Email",
       dataIndex: "email",
       key: "email",
-      render: (text: string) => <a href={`mailto:${text}`}>{text}</a>,
+      render: (text: string) => text ? <a href={`mailto:${text}`}>{text}</a> : "Chưa cập nhật",
     },
     {
       title: "Địa chỉ",
       dataIndex: "location",
       key: "location",
+      render: (text: string) => text || "Chưa cập nhật",
     },
     {
       title: "Loại cơ sở",
       dataIndex: "isUniversity",
       key: "isUniversity",
-      render: (isUniversity: boolean) => (
-        <Tag color={isUniversity ? "blue" : "orange"}>
-          {isUniversity ? "Trường đại học" : "Trung tâm đào tạo"}
+      render: (isUniversity: boolean | undefined) => (
+        <Tag color={isUniversity === undefined ? "default" : isUniversity ? "blue" : "orange"}>
+          {isUniversity === undefined ? "Chưa cập nhật" : isUniversity ? "Trường đại học" : "Trung tâm đào tạo"}
         </Tag>
       ),
     },
@@ -118,9 +125,13 @@ const IssuingAgencies = () => {
         <Space size="middle">
           <Button
             type="primary"
-            onClick={() =>
-              navigate(`/admin/issuing-agencies/find/${record._id}`)
-            }
+            onClick={() => {
+              if (!record._id) {
+                toast.error("Không tìm thấy ID cơ quan!");
+                return;
+              }
+              navigate(`/admin/issuing-agencies/find/${record._id}`);
+            }}
           >
             Xem
           </Button>
@@ -130,13 +141,26 @@ const IssuingAgencies = () => {
               color: "white",
               borderColor: "orange",
             }}
-            onClick={() =>
-              navigate(`/admin/issuing-agencies/update/${record._id}`)
-            }
+            onClick={() => {
+              if (!record._id) {
+                toast.error("Không tìm thấy ID cơ quan!");
+                return;
+              }
+              navigate(`/admin/issuing-agencies/update/${record._id}`);
+            }}
           >
             Sửa
           </Button>
-          <Button danger onClick={() => handleDelete(record._id)}>
+          <Button 
+            danger 
+            onClick={() => {
+              if (!record._id) {
+                toast.error("Không tìm thấy ID cơ quan!");
+                return;
+              }
+              handleDelete(record._id);
+            }}
+          >
             Xóa
           </Button>
         </Space>

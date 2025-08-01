@@ -6,7 +6,9 @@ import dayjs from "dayjs";
 
 import { getCookie } from "../../helpers/cookies";
 import { findUserByIdApi, updateUserApi } from "../../services/users";
+import { findRolesApi } from "../../services/roles";
 import type { IUser } from "../../interfaces/users";
+import type { IRole } from "../../interfaces/roles";
 import { EUserGender } from "../../interfaces/users";
 
 const { Title } = Typography;
@@ -17,6 +19,7 @@ type FieldType = {
   email: string;
   gender: "male" | "female";
   birthday: dayjs.Dayjs;
+  roleId?: string;
 };
 
 function UpdateUserPage() {
@@ -25,15 +28,22 @@ function UpdateUserPage() {
   const accessToken = getCookie("access_token");
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [roles, setRoles] = useState<IRole[]>([]);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchData = async () => {
       if (!id) return;
       setLoading(true);
       try {
-        const response = await findUserByIdApi({ accessToken, id });
-        const userData = response.data.data;
+        // Fetch user data
+        const userResponse = await findUserByIdApi({ accessToken, id });
+        const userData = userResponse.data.data;
         console.log("Current user data:", userData);
+
+        // Fetch roles
+        const rolesResponse = await findRolesApi({ accessToken });
+        const rolesData = rolesResponse.data.data.roles.items;
+        setRoles(rolesData);
 
         // Set form values
         form.setFieldsValue({
@@ -41,17 +51,18 @@ function UpdateUserPage() {
           email: userData.email,
           gender: userData.gender,
           birthday: dayjs(userData.birthday),
+          roleId: userData.roleId,
         });
         console.log("Form values after set:", form.getFieldsValue());
       } catch (error) {
-        console.error("Error fetching user:", error);
-        toast.error("Có lỗi khi tải thông tin người dùng!");
+        console.error("Error fetching data:", error);
+        toast.error("Có lỗi khi tải thông tin!");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
+    fetchData();
   }, [id, accessToken, form]);
 
   const onFinish = async (values: FieldType) => {
@@ -66,6 +77,7 @@ function UpdateUserPage() {
         email: values.email,
         gender: values.gender,
         birthday: values.birthday.format("YYYY-MM-DD"),
+        roleId: values.roleId,
       });
       console.log("Update response:", response.data);
 
@@ -152,6 +164,17 @@ function UpdateUserPage() {
           rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}
         >
           <DatePicker format="DD/MM/YYYY" />
+        </Form.Item>
+
+        <Form.Item<FieldType>
+          label="Vai trò"
+          name="roleId"
+        >
+          <Select allowClear>
+            {roles.map(role => (
+              <Option key={role._id} value={role._id}>{role.name}</Option>
+            ))}
+          </Select>
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
