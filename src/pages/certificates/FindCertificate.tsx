@@ -1,10 +1,23 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Form, Input, Select, Typography } from "antd";
+import {
+  Badge,
+  Empty,
+  Form,
+  Input,
+  Select,
+  Table,
+  Tooltip,
+  Typography,
+} from "antd";
 import { toast } from "react-toastify";
 
 import { getCookie } from "../../helpers/cookies";
 import { findCertificateByIdApi } from "../../services/certificates";
+import { findBlocksApi, getBlocksQuantityApi } from "../../services/block";
+import type { IBlock } from "../../interfaces/block";
+import type { ColumnsType } from "antd/es/table";
+import { findUserByIdApi } from "../../services/users";
 
 const { Title } = Typography;
 
@@ -31,6 +44,9 @@ function FindCertificatePage() {
   const location = useLocation();
   const pathnames = location.pathname.split("/");
   const id = pathnames[pathnames.length - 1];
+
+  const [blocksQuantity, setBlocksQuantity] = useState(0);
+  const [blocks, setBlocks] = useState<IBlock[]>([]);
 
   useEffect(() => {
     const fetchApi = async () => {
@@ -62,10 +78,148 @@ function FindCertificatePage() {
     fetchApi();
   }, [accessToken, id, form]);
 
+  useEffect(() => {
+    const fetchApi = async () => {
+      try {
+        const {
+          data: { data },
+        } = await getBlocksQuantityApi({
+          accessToken,
+          collection: "certificates",
+          collectionId: id,
+        });
+
+        setBlocksQuantity(data.quantity);
+      } catch {
+        toast.error("Có lỗi xảy ra");
+      }
+    };
+    fetchApi();
+  }, []);
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      try {
+        const {
+          data: { data },
+        } = await findBlocksApi({
+          accessToken,
+          collection: "certificates",
+          collectionId: id,
+        });
+
+        const { items } = data.blocks;
+
+        for (const item of items) {
+          const user = await findUserByIdApi({
+            accessToken,
+            id: item.data.userId,
+          });
+          item.data.userName = user.data.data.fullName;
+        }
+
+        setBlocks(items);
+      } catch {
+        toast.error("Có lỗi xảy ra");
+      }
+    };
+    fetchApi();
+  }, []);
+
+  const columns: ColumnsType<IBlock> = [
+    {
+      title: "Previous Hash",
+      dataIndex: "previousHash",
+      key: "previousHash",
+      render: (text: string) => (
+        <Tooltip title={text}>
+          <Typography.Text
+            copyable
+            ellipsis
+            style={{ maxWidth: 200, display: "inline-block" }}
+          >
+            {text}
+          </Typography.Text>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Current Hash",
+      dataIndex: "currentHash",
+      key: "currentHash",
+      render: (text: string) => (
+        <Tooltip title={text}>
+          <Typography.Text
+            copyable
+            ellipsis
+            style={{ maxWidth: 200, display: "inline-block" }}
+          >
+            {text}
+          </Typography.Text>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Collection",
+      dataIndex: ["data", "collection"],
+      key: "collection",
+    },
+    {
+      title: "Collection ID",
+      dataIndex: ["data", "collectionId"],
+      key: "collectionId",
+      render: (text: string) => (
+        <Tooltip title={text}>
+          <Typography.Text
+            copyable
+            ellipsis
+            style={{ maxWidth: 180, display: "inline-block" }}
+          >
+            {text}
+          </Typography.Text>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "User ID",
+      dataIndex: ["data", "userId"],
+      key: "userId",
+      render: (text: string) => (
+        <Tooltip title={text}>
+          <Typography.Text
+            copyable
+            ellipsis
+            style={{ maxWidth: 180, display: "inline-block" }}
+          >
+            {text}
+          </Typography.Text>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "User Name",
+      dataIndex: ["data", "userName"],
+      key: "userName",
+      render: (text) => text,
+    },
+    {
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (text) => new Date(text).toLocaleString(),
+    },
+  ];
+
   return (
     <>
       <div className="certificates">
         <Title>Chi Tiết Chứng Chỉ</Title>
+
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Badge count={blocksQuantity} showZero color="#faad14" />
+          <p style={{ marginLeft: "2px" }}>Blocks</p>
+        </div>
+
         <Form form={form} className="certificates__form" layout="vertical">
           <Form.Item<FieldType>
             label="Tiêu đề"
@@ -139,22 +293,6 @@ function FindCertificatePage() {
           >
             <Input disabled={true} />
           </Form.Item>
-          <Form.Item<FieldType>
-            label="Chữ ký học viên"
-            name="studentSignature"
-            rules={[{ required: true, message: "Hãy nhập chữ ký học viên!" }]}
-          >
-            <Input disabled={true} />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="Chữ ký tổ chức phát hành"
-            name="issuerSignature"
-            rules={[
-              { required: true, message: "Hãy nhập chữ ký tổ chức phát hành!" },
-            ]}
-          >
-            <Input disabled={true} />
-          </Form.Item>
         </Form>
 
         {qrCode && qrCode !== "n" && (
@@ -166,6 +304,20 @@ function FindCertificatePage() {
             />
           </>
         )}
+
+        <div style={{ padding: 24 }}>
+          <Title level={3}>Danh sách Blocks</Title>
+          {blocks.length > 0 ? (
+            <Table
+              dataSource={blocks}
+              columns={columns}
+              rowKey="_id"
+              pagination={{ pageSize: 5 }}
+            />
+          ) : (
+            <Empty description="Không có dữ liệu block" />
+          )}
+        </div>
       </div>
     </>
   );
