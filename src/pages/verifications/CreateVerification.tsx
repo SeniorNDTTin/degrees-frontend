@@ -14,6 +14,7 @@ import type { IDegree } from "../../interfaces/degrees";
 import type { ICertificate } from "../../interfaces/certificates";
 
 import "./verification.scss";
+import { checkBlocks } from "../../services/block";
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -39,13 +40,16 @@ function CreateVerificationPage() {
   const [degrees, setDegrees] = useState<IDegree[]>([]);
   const [certificates, setCertificates] = useState<ICertificate[]>([]);
 
+  const [isCheckBlock, setIsCheckBlock] = useState(false);
+  const [collection, setCollection] = useState("degrees");
+  const [collectionId, setCollectionId] = useState("");
+
   // Fetch verifiers list
   useEffect(() => {
     const fetchVerifiers = async () => {
       setLoadingVerifiers(true);
       try {
         const response = await findVerifiersApi({ accessToken });
-        console.log("Verifiers response:", response.data);
         const verifiersData = response.data.data.verifiers.items || [];
         setVerifiers(verifiersData);
       } catch (error) {
@@ -64,7 +68,6 @@ function CreateVerificationPage() {
       setLoadingDegrees(true);
       try {
         const response = await findDegreesApi({ accessToken });
-        console.log("Degrees response:", response.data);
         const degreesData = response.data.data.degrees.items || [];
         setDegrees(degreesData);
       } catch (error) {
@@ -83,7 +86,6 @@ function CreateVerificationPage() {
       setLoadingCertificates(true);
       try {
         const response = await findCertificatesApi({ accessToken });
-        console.log("Certificates response:", response.data);
         const certificatesData = response.data.data.certificates.items || [];
         setCertificates(certificatesData);
       } catch (error) {
@@ -105,6 +107,9 @@ function CreateVerificationPage() {
         studentEmail: selectedDegree.studentEmail,
       });
     }
+
+    setIsCheckBlock(false);
+    setCollectionId(value);
   };
 
   // Handle certificate change
@@ -116,6 +121,9 @@ function CreateVerificationPage() {
         studentEmail: selectedCertificate.studentEmail,
       });
     }
+
+    setIsCheckBlock(false);
+    setCollectionId(value);
   };
 
   // Validate student email
@@ -161,6 +169,29 @@ function CreateVerificationPage() {
       toast.error("Có lỗi xảy ra khi tạo mới!");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCheckBlock = async () => {
+    try {
+      if (!collectionId) {
+        toast.warning("Hãy chọn giấy tờ!");
+        return;
+      }
+
+      const {
+        data: { data },
+      } = await checkBlocks({ accessToken, collection, collectionId });
+
+      if (data.success) {
+        toast.success("Dữ liệu trên block hợp lệ");
+      } else {
+        toast.error("Dữ liệu trên block không hợp lệ");
+      }
+
+      setIsCheckBlock(data.success);
+    } catch {
+      toast.error("Có lỗi xảy ra");
     }
   };
 
@@ -218,7 +249,14 @@ function CreateVerificationPage() {
               name="type"
               rules={[{ required: true, message: "Hãy chọn loại xác thực!" }]}
             >
-              <Select>
+              <Select
+                onChange={(value) => {
+                  setIsCheckBlock(false);
+                  
+                  setCollection(value + "s");
+                  setCollectionId("");
+                }}
+              >
                 <Select.Option value="degree">Văn bằng</Select.Option>
                 <Select.Option value="certificate">Chứng chỉ</Select.Option>
               </Select>
@@ -313,12 +351,15 @@ function CreateVerificationPage() {
             >
               <TextArea rows={4} placeholder="Nhập mô tả" />
             </Form.Item>
-            
+
             <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
+              <Button onClick={handleCheckBlock}>Kiểm tra dữ liệu block</Button>
+
               <Button
                 type="primary"
                 htmlType="submit"
                 style={{ minWidth: "100px", borderRadius: "6px" }}
+                disabled={!isCheckBlock}
               >
                 Tạo mới
               </Button>
