@@ -55,7 +55,7 @@ function UpdateRolePage() {
       });
 
       toast.success("Cập nhật thành công!");
-    } catch(error) {
+    } catch (error) {
       if (error.status === 403) {
         toast.error("Bạn không có quyền");
         return;
@@ -104,29 +104,50 @@ function UpdateRolePage() {
               placeholder="Hãy chọn"
               defaultValue={[]}
               options={[
+                // certificate
+                { label: "create-certificate", value: "create-certificate" },
+                { label: "update-certificate", value: "update-certificate" },
+                { label: "delete-certificate", value: "delete-certificate" },
+                { label: "read-certificate", value: "read-certificate" },
+                //degree
+                { label: "create-degree", value: "create-degree" },
+                { label: "update-degree", value: "update-degree" },
+                { label: "delete-degree", value: "delete-degree" },
+                { label: "read-degree", value: "read-degree" },
+                // issuing agency
+                {
+                  label: "create-issuing-agency",
+                  value: "create-issuing-agency",
+                },
+                {
+                  label: "update-issuing-agency",
+                  value: "update-issuing-agency",
+                },
+                {
+                  label: "delete-issuing-agency",
+                  value: "delete-issuing-agency",
+                },
+                { label: "read-issuing-agency", value: "read-issuing-agency" },
                 // roles
-                {
-                  label: "create-role",
-                  value: "create-role",
-                },
-                {
-                  label: "update-role",
-                  value: "update-role",
-                },
-                {
-                  label: "delete-role",
-                  value: "delete-role",
-                },
-                {
-                  label: "read-role",
-                  value: "read-role",
-                },
-
+                { label: "create-role", value: "create-role" },
+                { label: "update-role", value: "update-role" },
+                { label: "delete-role", value: "delete-role" },
+                { label: "read-role", value: "read-role" },
                 // users
-                {
-                  label: "create-user",
-                  value: "create-user",
-                },
+                { label: "create-user", value: "create-user" },
+                { label: "update-user", value: "update-user" },
+                { label: "delete-user", value: "delete-user" },
+                { label: "read-user", value: "read-user" },
+                // verification
+                { label: "create-verification", value: "create-verification" },
+                { label: "update-verification", value: "update-verification" },
+                { label: "delete-verification", value: "delete-verification" },
+                { label: "read-verification", value: "read-verification" },
+                // verifier
+                { label: "create-verifier", value: "create-verifier" },
+                { label: "update-verifier", value: "update-verifier" },
+                { label: "delete-verifier", value: "delete-verifier" },
+                { label: "read-verifier", value: "read-verifier" },
               ]}
             />
           </Form.Item>
