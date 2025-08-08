@@ -67,7 +67,10 @@ function CreateVerificationPage() {
     const fetchDegrees = async () => {
       setLoadingDegrees(true);
       try {
-        const response = await findDegreesApi({ accessToken });
+        const response = await findDegreesApi({
+          accessToken,
+          filter: { isVerifying: true },
+        });
         const degreesData = response.data.data.degrees.items || [];
         setDegrees(degreesData);
       } catch (error) {
@@ -85,7 +88,10 @@ function CreateVerificationPage() {
     const fetchCertificates = async () => {
       setLoadingCertificates(true);
       try {
-        const response = await findCertificatesApi({ accessToken });
+        const response = await findCertificatesApi({
+          accessToken,
+          filter: { isVerifying: true },
+        });
         const certificatesData = response.data.data.certificates.items || [];
         setCertificates(certificatesData);
       } catch (error) {
@@ -252,7 +258,7 @@ function CreateVerificationPage() {
               <Select
                 onChange={(value) => {
                   setIsCheckBlock(false);
-                  
+
                   setCollection(value + "s");
                   setCollectionId("");
                 }}
